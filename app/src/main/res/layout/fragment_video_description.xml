@@ -1,15 +1,13 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MyActivity$VideoDescriptionFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/playerDescription"
-        android:text="@string/video_description"
-        android:textAlignment="center"
-        android:gravity="center_horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="@dimen/font_size" />
-</FrameLayout>
+    <Button
+        android:id="@+id/btn_preload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="preload"/>
+
+</LinearLayout>
