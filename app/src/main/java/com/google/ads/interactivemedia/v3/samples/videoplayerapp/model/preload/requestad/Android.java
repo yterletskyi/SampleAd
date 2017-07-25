@@ -1,6 +1,5 @@
 package com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.requestad;
 
-
 public class Android {
 
     public double volume_level = 0.46666667;
