@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.api.IApiService;
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.requestad.RequestAd;
@@ -31,6 +32,7 @@ public class VideoDescriptionFragment extends Fragment {
                 preloadAd();
             }
         });
+
         return view;
     }
 
@@ -41,16 +43,17 @@ public class VideoDescriptionFragment extends Fragment {
         responseCall.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                System.out.println();
-                // response.body().ads.get(0).adMarkup.url
+                String url = response.body().ads.get(0).adMarkup.url;
+                MyActivity activity = (MyActivity) getActivity();
+                activity.setVideoUrl(url);
+                activity.enablePlayButton();
             }
 
             @Override
             public void onFailure(Call<Response> call, Throwable t) {
-                System.out.println();
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
 }

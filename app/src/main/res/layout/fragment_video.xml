@@ -1,30 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/videoOverlay"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".MyActivity$VideoFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/videoPlayerWithAdPlayback"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/videoPlayerWithAdPlayback"
+    <com.google.ads.interactivemedia.v3.samples.samplevideoplayer.SampleVideoPlayer
+        android:id="@+id/sampleVideoPlayer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"/>
 
-        <com.google.ads.interactivemedia.v3.samples.samplevideoplayer.SampleVideoPlayer
-            android:id="@+id/sampleVideoPlayer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"/>
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:contentDescription="Play Button"
+        android:src="@drawable/ic_action_play_over_video"
+        android:visibility="gone"/>
 
-        <ImageButton
-            android:id="@+id/playButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:contentDescription="Play Button"
-            android:src="@drawable/ic_action_play_over_video"/>
+</RelativeLayout>
 
-    </RelativeLayout>
-
-</LinearLayout>

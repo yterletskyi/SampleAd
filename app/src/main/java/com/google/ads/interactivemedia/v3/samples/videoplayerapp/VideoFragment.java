@@ -51,6 +51,8 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
     // The play button to trigger the ad request.
     private View mPlayButton;
 
+    private String mVideoUrl = "";
+
     @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
@@ -89,11 +91,16 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mVideoPlayer.setVideoPath(getString(R.string.content_url));
-                requestAds(getString(R.string.ad_tag_url));
+                mVideoPlayer.setVideoPath(mVideoUrl);
+                mVideoPlayer.play();
+//                requestAds(getString(R.string.ad_tag_url));
                 view.setVisibility(View.GONE);
             }
         });
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        mVideoUrl = videoUrl;
     }
 
     @Override
@@ -197,5 +204,9 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
             mVideoPlayer.pause();
         }
         super.onPause();
+    }
+
+    public void enablePlayButton() {
+        mPlayButton.setVisibility(View.VISIBLE);
     }
 }

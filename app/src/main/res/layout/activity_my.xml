@@ -8,6 +8,7 @@
               tools:ignore="MergeRootFrame">
 
     <fragment
+        android:id="@+id/video_fr"
         android:name="com.google.ads.interactivemedia.v3.samples.videoplayerapp.VideoFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
