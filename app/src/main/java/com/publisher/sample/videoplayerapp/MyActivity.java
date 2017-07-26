@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.publisher.sample.R;
 import com.publisher.sample.sdk.OnCompleteListener;
 import com.publisher.sample.sdk.Sdk;
+import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Arrays;
@@ -59,7 +60,12 @@ public class MyActivity extends AppCompatActivity {
     }
 
     private void preloadAd(String placementId) {
-        mSdk.preloadAd(placementId);
+        mSdk.preloadAd(placementId, new OnCompleteListener<PreloadResponse>() {
+            @Override
+            public void onCompleted(PreloadResponse result) {
+                
+            }
+        });
     }
 
     public void setVideoUrl(String url) {

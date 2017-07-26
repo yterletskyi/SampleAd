@@ -3,7 +3,7 @@ package com.publisher.sample.sdk;
 import android.content.Context;
 
 import com.publisher.sample.sdk.model.init.response.InitResponse;
-import com.publisher.sample.sdk.model.preload.response.Response;
+import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
 import com.publisher.sample.sdk.model.request.GlobalRequest;
 import com.publisher.sample.sdk.model.request.RequestBuilder;
 import com.publisher.sample.videoplayerapp.api.IApiService;
@@ -51,19 +51,19 @@ public class Sdk {
         });
     }
 
-    public void preloadAd(String placementId) {
+    public void preloadAd(String placementId, final OnCompleteListener<PreloadResponse> listener) {
         RequestBuilder requestBuilder = new RequestBuilder();
         GlobalRequest request = requestBuilder.buildPreloadAdRequest(mContext, mAppId, placementId);
 
-        Call<Response> responseCall = mApiService.preloadAd(request);
-        responseCall.enqueue(new Callback<Response>() {
+        Call<PreloadResponse> responseCall = mApiService.preloadAd(request);
+        responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                System.out.println();
+            public void onResponse(Call<PreloadResponse> call, retrofit2.Response<PreloadResponse> response) {
+                listener.onCompleted(response.body());
             }
 
             @Override
-            public void onFailure(Call<Response> call, Throwable t) {
+            public void onFailure(Call<PreloadResponse> call, Throwable t) {
                 System.out.println();
             }
         });
