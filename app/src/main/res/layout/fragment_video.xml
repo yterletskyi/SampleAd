@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.ads.interactivemedia.v3.samples.samplevideoplayer.SampleVideoPlayer
+    <com.publisher.sample.samplevideoplayer.SampleVideoPlayer
         android:id="@+id/sampleVideoPlayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

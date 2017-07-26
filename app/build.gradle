@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.google.ads.interactivemedia.v3.samples.videoplayerapp"
+        applicationId "com.publisher.sample.videoplayerapp"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1

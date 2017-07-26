@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.google.ads.interactivemedia.v3.samples.videoplayerapp">
+          package="com.publisher.sample">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:name=".VideoApp"
+        android:name=".videoplayerapp.VideoApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -17,7 +17,7 @@
             android:value="@integer/google_play_services_version"/>
 
         <activity
-            android:name=".MyActivity"
+            android:name=".videoplayerapp.MyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:label="@string/app_name">
             <intent-filter>

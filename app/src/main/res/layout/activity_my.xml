@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/video_fr"
-        android:name="com.google.ads.interactivemedia.v3.samples.videoplayerapp.VideoFragment"
+        android:name="com.publisher.sample.videoplayerapp.VideoFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.8"/>
