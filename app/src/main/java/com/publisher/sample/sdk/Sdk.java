@@ -1,17 +1,27 @@
 package com.publisher.sample.sdk;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.webkit.WebView;
 
 import com.publisher.sample.sdk.model.App;
 import com.publisher.sample.sdk.model.Device;
+import com.publisher.sample.sdk.model.Ext;
 import com.publisher.sample.sdk.model.GlobalRequest;
 import com.publisher.sample.sdk.model.Request;
+import com.publisher.sample.sdk.model.Vungle;
+import com.publisher.sample.sdk.model.init.request.Android;
 import com.publisher.sample.sdk.model.init.response.InitResponse;
 import com.publisher.sample.sdk.model.preload.responsead.Response;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,6 +46,7 @@ public class Sdk {
     public void initSdk(IApiService apiService, String appId, List<String> placementList, final OnCompleteListener<Boolean> listener) {
         mApiService = apiService;
         mAppId = appId;
+
         GlobalRequest initSdkRequest = new GlobalRequest()
                 .withApp(
                         new App()
@@ -48,8 +59,46 @@ public class Sdk {
                                 .withPlacements(placementList)
                 )
                 .withDevice(
-                        // TODO: 26.07.17 finish this
                         new Device()
+                                .withUa(new WebView(mActivity).getSettings().getUserAgentString())
+                                .withLmt(1)
+                                .withMake(Build.MANUFACTURER)
+                                .withModel(Build.MODEL)
+                                .withOs("android")
+                                .withOsv(Build.VERSION.RELEASE)
+                                .withW(mActivity.getResources().getDisplayMetrics().widthPixels)
+                                .withH(mActivity.getResources().getDisplayMetrics().heightPixels)
+                                .withCarrier(((TelephonyManager) mActivity.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkOperatorName())
+                                .withIfa(Settings.Secure.getString(mActivity.getContentResolver(), Settings.Secure.ANDROID_ID))
+                                .withExt(
+                                        new Ext()
+                                                .withVungle(
+                                                        new Vungle()
+                                                                .withAndroid(
+                                                                        new Android()
+                                                                                .withVolumeLevel(new MyAudioManager().getVolumeLevel(mActivity))
+                                                                                .withBatteryLevel(new BatteryManager().getBatteryPercentage(mActivity))
+                                                                                .withBatterySaverEnabled(new BatteryManager().getBatterySaverEnabled(mActivity))
+                                                                                .withBatteryState(new BatteryManager().isCharging(mActivity) ? "CHARGING" : "NOT_CHARGING")
+                                                                                .withStorageBytesAvailable(new DiskSpaceManager().getAvailableExternalMemorySize())
+                                                                                .withDataSaverStatus(Connectivity.getDataSavedStatus(mActivity))
+                                                                                .withNetworkMetered(Connectivity.isNetworkMetered(mActivity) ? 1 : 0)
+                                                                                .withSdCardAvailable(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) ? 1 : 0)
+                                                                                .withConnectionType(Connectivity.getConnectionType(mActivity))
+                                                                                .withConnectionTypeDetail(Connectivity.getConnectionTypeDetail(mActivity))
+                                                                                .withSoundEnabled(new MyAudioManager().isSoundEnabled(mActivity) ? 1 : 0)
+                                                                                .withLanguage(Locale.getDefault().getLanguage())
+                                                                                .withLocale(Locale.getDefault().toString())
+                                                                                .withAndroidId(Settings.Secure.getString(mActivity.getContentResolver(), Settings.Secure.ANDROID_ID))
+                                                                                .withVduid("")
+                                                                                .withOsName(Build.FINGERPRINT)
+                                                                                .withTimeZone(TimeZone.getDefault().getID())
+                                                                )
+                                                                .withPlatform("android")
+                                                )
+                                )
+
+
                 );
 
         Call<InitResponse> call = mApiService.initSDK(Sdk.VERSION, initSdkRequest);
@@ -79,7 +128,6 @@ public class Sdk {
                                 .withPlacements(Collections.singletonList(placementId))
                 )
                 .withDevice(
-                        // TODO: 26.07.17 finish this
                         new Device()
                 );
 

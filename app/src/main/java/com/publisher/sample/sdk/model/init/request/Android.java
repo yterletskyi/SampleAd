@@ -1,5 +1,4 @@
-
-package com.publisher.sample;
+package com.publisher.sample.sdk.model.init.request;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -20,7 +19,7 @@ public class Android {
     public String batteryState;
     @SerializedName("storage_bytes_available")
     @Expose
-    public int storageBytesAvailable;
+    public long storageBytesAvailable;
     @SerializedName("connection_type")
     @Expose
     public String connectionType;
@@ -78,7 +77,7 @@ public class Android {
         return this;
     }
 
-    public Android withStorageBytesAvailable(int storageBytesAvailable) {
+    public Android withStorageBytesAvailable(long storageBytesAvailable) {
         this.storageBytesAvailable = storageBytesAvailable;
         return this;
     }
