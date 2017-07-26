@@ -55,7 +55,7 @@ public class Sdk {
         RequestBuilder requestBuilder = new RequestBuilder();
         GlobalRequest request = requestBuilder.buildPreloadAdRequest(mContext, mAppId, placementId);
 
-        Call<Response> responseCall = mApiService.preloadAd("5.0.0", request);
+        Call<Response> responseCall = mApiService.preloadAd(request);
         responseCall.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {

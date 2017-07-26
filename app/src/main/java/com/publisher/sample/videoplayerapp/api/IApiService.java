@@ -17,11 +17,12 @@ import retrofit2.http.POST;
 public interface IApiService {
 
     @Headers("Content-Type: application/json")
-
     @POST("https://ads.api.vungle.com/config")
     Call<InitResponse> initSDK(@Header("Vungle-Version") String value, @Body GlobalRequest request);
 
+    @Headers("Content-Type: application/json")
     @POST("https://api.vungle.com/api/v5/ads")
-    Call<Response> preloadAd(@Header("Vungle-Version") String value, @Body GlobalRequest request);
+    Call<Response> preloadAd(@Body GlobalRequest request);
+
 
 }
