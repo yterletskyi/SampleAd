@@ -1,8 +1,8 @@
 package com.publisher.sample.videoplayerapp.api;
 
-import com.publisher.sample.sdk.model.request.GlobalRequest;
 import com.publisher.sample.sdk.model.init.response.InitResponse;
 import com.publisher.sample.sdk.model.preload.response.Response;
+import com.publisher.sample.sdk.model.request.GlobalRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -21,8 +21,7 @@ public interface IApiService {
     @POST("https://ads.api.vungle.com/config")
     Call<InitResponse> initSDK(@Header("Vungle-Version") String value, @Body GlobalRequest request);
 
-    @POST("/api/v5/ads")
-    Call<Response> preloadAd(@Body GlobalRequest request);
-
+    @POST("https://api.vungle.com/api/v5/ads")
+    Call<Response> preloadAd(@Header("Vungle-Version") String value, @Body GlobalRequest request);
 
 }

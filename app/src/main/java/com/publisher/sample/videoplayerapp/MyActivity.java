@@ -1,14 +1,9 @@
 package com.publisher.sample.videoplayerapp;
 
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.publisher.sample.R;
@@ -17,7 +12,6 @@ import com.publisher.sample.sdk.Sdk;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Arrays;
-import java.util.TimeZone;
 
 public class MyActivity extends AppCompatActivity {
 
@@ -45,25 +39,13 @@ public class MyActivity extends AppCompatActivity {
                 preloadAd("TESTREW28799");
             }
         });
-    }
 
-    private void preloadAd(String placementId) {
-        mSdk.preloadAd(placementId);
+        mSdk = new Sdk(this);
     }
 
     private void initSdk() {
         IApiService apiService = ((VideoApp) getApplication()).getApiService();
 
-
-
-        // vungle os name
-
-
-        // time zone
-
-
-
-        mSdk = new Sdk(this);
         mSdk.initSdk(apiService, "5916309cb46f6b5a3e00009c", Arrays.asList("DEFAULT32590", "TESTREW28799", "TESTINT07107"), new OnCompleteListener<Boolean>() {
             @Override
             public void onCompleted(Boolean result) {
@@ -74,6 +56,10 @@ public class MyActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void preloadAd(String placementId) {
+        mSdk.preloadAd(placementId);
     }
 
     public void setVideoUrl(String url) {
