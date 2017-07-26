@@ -1,4 +1,4 @@
-package com.publisher.sample.sdk;
+package com.publisher.sample.sdk.model.utils;
 
 import android.content.Context;
 import android.media.AudioManager;

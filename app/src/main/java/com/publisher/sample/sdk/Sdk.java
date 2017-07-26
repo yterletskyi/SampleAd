@@ -16,6 +16,10 @@ import com.publisher.sample.sdk.model.request.Vungle;
 import com.publisher.sample.sdk.model.request.Android;
 import com.publisher.sample.sdk.model.init.response.InitResponse;
 import com.publisher.sample.sdk.model.preload.response.Response;
+import com.publisher.sample.sdk.model.utils.BatteryManager;
+import com.publisher.sample.sdk.model.utils.Connectivity;
+import com.publisher.sample.sdk.model.utils.DiskSpaceManager;
+import com.publisher.sample.sdk.model.utils.MyAudioManager;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Collections;
