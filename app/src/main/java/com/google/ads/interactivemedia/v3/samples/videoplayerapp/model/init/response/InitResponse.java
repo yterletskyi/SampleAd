@@ -1,5 +1,5 @@
 
-package com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.play.response;
+package com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.init.response;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

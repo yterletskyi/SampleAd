@@ -1,4 +1,4 @@
-package com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.play.request;
+package com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.init.request;
 
 public class Android {
 

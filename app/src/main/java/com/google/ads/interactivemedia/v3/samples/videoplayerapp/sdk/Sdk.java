@@ -1,7 +1,7 @@
 package com.google.ads.interactivemedia.v3.samples.videoplayerapp.sdk;
 
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.api.IApiService;
-import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.play.response.InitResponse;
+import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.init.response.InitResponse;
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.requestad.GlobalRequest;
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.responsead.Response;
 
