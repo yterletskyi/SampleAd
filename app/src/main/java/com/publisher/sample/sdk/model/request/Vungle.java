@@ -1,8 +1,7 @@
-package com.publisher.sample.sdk.model;
+package com.publisher.sample.sdk.model.request;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.publisher.sample.sdk.model.init.request.Android;
 
 public class Vungle {
 

@@ -1,4 +1,4 @@
-package com.publisher.sample.sdk.model;
+package com.publisher.sample.sdk.model.request;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,4 +1,4 @@
-package com.publisher.sample.sdk.model.preload.responsead;
+package com.publisher.sample.sdk.model.preload.response;
 
 import java.util.List;
 

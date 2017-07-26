@@ -1,8 +1,8 @@
 package com.publisher.sample.videoplayerapp.api;
 
-import com.publisher.sample.sdk.model.GlobalRequest;
+import com.publisher.sample.sdk.model.request.GlobalRequest;
 import com.publisher.sample.sdk.model.init.response.InitResponse;
-import com.publisher.sample.sdk.model.preload.responsead.Response;
+import com.publisher.sample.sdk.model.preload.response.Response;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

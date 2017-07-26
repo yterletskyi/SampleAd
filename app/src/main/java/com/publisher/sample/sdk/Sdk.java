@@ -7,15 +7,15 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
-import com.publisher.sample.sdk.model.App;
-import com.publisher.sample.sdk.model.Device;
-import com.publisher.sample.sdk.model.Ext;
-import com.publisher.sample.sdk.model.GlobalRequest;
-import com.publisher.sample.sdk.model.Request;
-import com.publisher.sample.sdk.model.Vungle;
-import com.publisher.sample.sdk.model.init.request.Android;
+import com.publisher.sample.sdk.model.request.App;
+import com.publisher.sample.sdk.model.request.Device;
+import com.publisher.sample.sdk.model.request.Ext;
+import com.publisher.sample.sdk.model.request.GlobalRequest;
+import com.publisher.sample.sdk.model.request.Request;
+import com.publisher.sample.sdk.model.request.Vungle;
+import com.publisher.sample.sdk.model.request.Android;
 import com.publisher.sample.sdk.model.init.response.InitResponse;
-import com.publisher.sample.sdk.model.preload.responsead.Response;
+import com.publisher.sample.sdk.model.preload.response.Response;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Collections;
