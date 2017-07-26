@@ -7,15 +7,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.ads.interactivemedia.v3.samples.videoplayerapp.api.IApiService;
-import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.play.response.InitResponse;
-import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.requestad.GlobalRequest;
-import com.google.ads.interactivemedia.v3.samples.videoplayerapp.model.preload.responsead.Response;
+import com.google.ads.interactivemedia.v3.samples.videoplayerapp.sdk.OnCompleteListener;
+import com.google.ads.interactivemedia.v3.samples.videoplayerapp.sdk.Sdk;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import java.util.Arrays;
 
 public class MyActivity extends AppCompatActivity {
 
+    private Sdk mSdk;
     private VideoFragment mVideoFragment;
 
     @Override
@@ -26,13 +25,6 @@ public class MyActivity extends AppCompatActivity {
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         mVideoFragment = (VideoFragment) supportFragmentManager.findFragmentById(R.id.video_fr);
 
-        findViewById(R.id.btn_preload).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                preloadAd();
-            }
-        });
-
         findViewById(R.id.btn_init).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,46 +32,30 @@ public class MyActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.btn_preload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                preloadAd("TESTREW28799");
+            }
+        });
+    }
+
+    private void preloadAd(String placementId) {
+        mSdk.preloadAd(placementId);
     }
 
     private void initSdk() {
         IApiService apiService = ((VideoApp) getApplication()).getApiService();
 
-        GlobalRequest initSdkRequest = new GlobalRequest();
-        initSdkRequest.request.placements.add("DEFAULT32590");
-        initSdkRequest.request.placements.add("TESTREW28799");
-        initSdkRequest.request.placements.add("TESTINT07107");
-
-        Call<InitResponse> call = apiService.initSDK("5.0.0", initSdkRequest);
-        call.enqueue(new Callback<InitResponse>() {
+        mSdk = new Sdk();
+        mSdk.initSdk(apiService, "5916309cb46f6b5a3e00009c", Arrays.asList("DEFAULT32590", "TESTREW28799", "TESTINT07107"), new OnCompleteListener<Boolean>() {
             @Override
-            public void onResponse(Call<InitResponse> call, retrofit2.Response<InitResponse> response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onFailure(Call<InitResponse> call, Throwable t) {
-                System.out.println();
-            }
-        });
-
-    }
-
-    private void preloadAd() {
-        IApiService apiService = ((VideoApp) getApplication()).getApiService();
-
-        Call<Response> responseCall = apiService.preloadAd(new GlobalRequest());
-        responseCall.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                String url = response.body().ads.get(0).adMarkup.url;
-                setVideoUrl(url);
-                enablePlayButton();
-            }
-
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-                Toast.makeText(MyActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            public void onCompleted(Boolean result) {
+                if (result) {
+                    System.out.println();
+                } else {
+                    Toast.makeText(MyActivity.this, "Init error", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
