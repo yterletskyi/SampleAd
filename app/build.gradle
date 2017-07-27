@@ -20,6 +20,7 @@ android {
 }
 
 dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 
     compile 'com.google.ads.interactivemedia.v3:interactivemedia:3.7.2'
     compile 'com.android.support:appcompat-v7:25.3.1'
