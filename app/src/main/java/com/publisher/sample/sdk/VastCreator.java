@@ -4,7 +4,7 @@ import com.jamesmurty.utils.XMLBuilder;
 import com.publisher.sample.sdk.model.preload.response.Ad;
 import com.publisher.sample.sdk.model.preload.response.PlayPercentage;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
-import com.publisher.sample.sdk.model.utils.MimeDetector;
+import com.publisher.sample.sdk.utils.MimeDetector;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.publisher.sample.sdk.model.utils;
+package com.publisher.sample.sdk.utils;
 
 import java.net.FileNameMap;
 import java.net.URLConnection;

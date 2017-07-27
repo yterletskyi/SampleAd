@@ -1,4 +1,4 @@
-package com.publisher.sample.sdk.model.utils;
+package com.publisher.sample.sdk.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

@@ -7,10 +7,10 @@ import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
 import com.publisher.sample.sdk.model.init.response.InitResponse;
-import com.publisher.sample.sdk.model.utils.BatteryManager;
-import com.publisher.sample.sdk.model.utils.Connectivity;
-import com.publisher.sample.sdk.model.utils.DiskSpaceManager;
-import com.publisher.sample.sdk.model.utils.MyAudioManager;
+import com.publisher.sample.sdk.utils.BatteryManager;
+import com.publisher.sample.sdk.utils.Connectivity;
+import com.publisher.sample.sdk.utils.DiskSpaceManager;
+import com.publisher.sample.sdk.utils.MyAudioManager;
 
 import java.util.Collections;
 import java.util.List;
