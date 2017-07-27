@@ -34,7 +34,7 @@ public class VastCreator {
                     .e("InLine")
                     .e("AdSystem").t(REQUIRED_FIELD).up()
                     .e("AdTitle").t(REQUIRED_FIELD).up()
-                    .e("Impression").cdata(REQUIRED_FIELD)
+                    .e("Impression").cdata(REQUIRED_FIELD).up()
                     .e("Creatives")
                     .e("Creative")
                     .e("Linear")
