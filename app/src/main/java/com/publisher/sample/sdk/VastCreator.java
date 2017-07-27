@@ -32,7 +32,7 @@ public class VastCreator {
             XMLBuilder xmlBuilder = XMLBuilder.create("VAST").a("version", "2.0")
                     .e("Ad").a("id", ad.adMarkup.id)
                     .e("InLine")
-                    .e("AdSystem").t("").up()
+                    .e("AdSystem").t(REQUIRED_FIELD).up()
                     .e("AdTitle").t(REQUIRED_FIELD).up()
                     .e("Impression").cdata(REQUIRED_FIELD)
                     .e("Creatives")
