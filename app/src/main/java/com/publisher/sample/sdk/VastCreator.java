@@ -6,9 +6,8 @@ import com.jamesmurty.utils.XMLBuilder;
 import com.publisher.sample.sdk.model.preload.response.Ad;
 import com.publisher.sample.sdk.model.preload.response.PlayPercentage;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
+import com.publisher.sample.sdk.model.utils.MimeDetector;
 
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -24,16 +23,9 @@ public class VastCreator {
     public void build(PreloadResponse result) {
         Ad ad = result.ads.get(0);
 
-        String impressionIrl = null;
+        Map<Double, String> quartiles = composeQuartilesMap(ad);
 
-        Map<Double, String> quartiles = new HashMap<>();
-        for (PlayPercentage playPercentage : ad.adMarkup.tpat.playPercentage) {
-            int urlIndex = 0;
-            quartiles.put(playPercentage.checkpoint, playPercentage.urls.get(urlIndex));
-        }
-
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        String mimeType = fileNameMap.getContentTypeFor(ad.adMarkup.url);
+        String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
 
         try {
 
@@ -71,10 +63,18 @@ public class VastCreator {
             String xml = xmlBuilder.asString(outputProperties);
             Log.i("info", xml);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Map<Double, String> composeQuartilesMap(Ad ad) {
+        Map<Double, String> quartiles = new HashMap<>();
+        for (PlayPercentage playPercentage : ad.adMarkup.tpat.playPercentage) {
+            int urlIndex = 0;
+            quartiles.put(playPercentage.checkpoint, playPercentage.urls.get(urlIndex));
+        }
+        return quartiles;
     }
 
 }
