@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.publisher.sample.R;
 import com.publisher.sample.sdk.OnCompleteListener;
 import com.publisher.sample.sdk.Sdk;
+import com.publisher.sample.sdk.VastCreator;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
@@ -63,9 +64,14 @@ public class MyActivity extends AppCompatActivity {
         mSdk.preloadAd(placementId, new OnCompleteListener<PreloadResponse>() {
             @Override
             public void onCompleted(PreloadResponse result) {
-                
+                formVastXml(result);
             }
         });
+    }
+
+    private void formVastXml(PreloadResponse result) {
+        VastCreator vastCreator = new VastCreator();
+        vastCreator.build(result);
     }
 
     public void setVideoUrl(String url) {
