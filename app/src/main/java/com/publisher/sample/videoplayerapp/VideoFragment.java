@@ -52,7 +52,11 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
     // The play button to trigger the ad request.
     private View mPlayButton;
 
-    private String mVideoUrl = "";
+    private String mVastXml;
+
+    public void setVastXml(String vastXml) {
+        mVastXml = vastXml;
+    }
 
     @Override
     public void onActivityCreated(Bundle bundle) {
@@ -92,16 +96,11 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mVideoPlayer.setVideoPath(mVideoUrl);
-                mVideoPlayer.play();
-//                requestAds(getString(R.string.ad_tag_url));
+                mVideoPlayer.setVideoPath(getString(R.string.content_url));
+                requestAds(mVastXml);
                 view.setVisibility(View.GONE);
             }
         });
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        mVideoUrl = videoUrl;
     }
 
     @Override
@@ -119,15 +118,16 @@ public class VideoFragment extends Fragment implements AdEvent.AdEventListener, 
     /**
      * Request video ads from the given VAST ad tag.
      *
-     * @param adTagUrl URL of the ad's VAST XML
+     * @param vastXml ad's VAST XML
      */
-    private void requestAds(String adTagUrl) {
+    private void requestAds(String vastXml) {
         AdDisplayContainer adDisplayContainer = mSdkFactory.createAdDisplayContainer();
         adDisplayContainer.setAdContainer(mAdUiContainer);
 
         // Create the ads request.
         AdsRequest request = mSdkFactory.createAdsRequest();
-        request.setAdTagUrl(adTagUrl);
+        request.setAdsResponse(vastXml);
+//        request.setAdTagUrl(vastXml);
         request.setAdDisplayContainer(adDisplayContainer);
         request.setContentProgressProvider(new ContentProgressProvider() {
             @Override
