@@ -3,6 +3,7 @@ package com.publisher.sample.videoplayerapp;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -53,11 +54,16 @@ public class MyActivity extends AppCompatActivity {
             public void onCompleted(Boolean result) {
                 if (result) {
                     System.out.println();
+                    enablePreloadAdButton();
                 } else {
                     Toast.makeText(MyActivity.this, "Init error", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private void enablePreloadAdButton() {
+        findViewById(R.id.btn_preload).setEnabled(true);
     }
 
     private void preloadAd(String placementId) {
@@ -71,7 +77,8 @@ public class MyActivity extends AppCompatActivity {
 
     private void formVastXml(PreloadResponse result) {
         VastCreator vastCreator = new VastCreator();
-        vastCreator.build(result);
+        String xml = vastCreator.build(result);
+        Log.i("info", xml);
     }
 
     public void setVideoUrl(String url) {

@@ -1,7 +1,5 @@
 package com.publisher.sample.sdk;
 
-import android.util.Log;
-
 import com.jamesmurty.utils.XMLBuilder;
 import com.publisher.sample.sdk.model.preload.response.Ad;
 import com.publisher.sample.sdk.model.preload.response.PlayPercentage;
@@ -20,12 +18,14 @@ public class VastCreator {
 
     private static final String REQUIRED_FIELD = "REQUIRED FIELD";
 
-    public void build(PreloadResponse result) {
+    public String build(PreloadResponse result) {
         Ad ad = result.ads.get(0);
 
         Map<Double, String> quartiles = composeQuartilesMap(ad);
 
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
+
+        String xml = "";
 
         try {
 
@@ -60,12 +60,13 @@ public class VastCreator {
             Properties outputProperties = new Properties();
             outputProperties.put(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
 
-            String xml = xmlBuilder.asString(outputProperties);
-            Log.i("info", xml);
+            xml = xmlBuilder.asString(outputProperties);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return xml;
     }
 
     private Map<Double, String> composeQuartilesMap(Ad ad) {

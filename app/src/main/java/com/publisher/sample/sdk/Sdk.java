@@ -26,6 +26,8 @@ public class Sdk {
     private IApiService mApiService;
     private String mAppId;
 
+    private InitResponse mInitResponse;
+
     public Sdk(Context context) {
         mContext = context;
     }
@@ -41,6 +43,7 @@ public class Sdk {
         call.enqueue(new Callback<InitResponse>() {
             @Override
             public void onResponse(Call<InitResponse> call, retrofit2.Response<InitResponse> response) {
+                mInitResponse = response.body();
                 listener.onCompleted(true);
             }
 
@@ -53,13 +56,14 @@ public class Sdk {
 
     public void preloadAd(String placementId, final OnCompleteListener<PreloadResponse> listener) {
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest request = requestBuilder.buildPreloadAdRequest(mContext, mAppId, placementId);
+        GlobalRequest request = requestBuilder.buildPreloadAdRequest(mContext, mAppId, placementId, mInitResponse);
 
         Call<PreloadResponse> responseCall = mApiService.preloadAd(request);
         responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
             public void onResponse(Call<PreloadResponse> call, retrofit2.Response<PreloadResponse> response) {
-                listener.onCompleted(response.body());
+                PreloadResponse result = response.body();
+                listener.onCompleted(result);
             }
 
             @Override

@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
+import com.publisher.sample.sdk.model.init.response.InitResponse;
 import com.publisher.sample.sdk.model.utils.BatteryManager;
 import com.publisher.sample.sdk.model.utils.Connectivity;
 import com.publisher.sample.sdk.model.utils.DiskSpaceManager;
@@ -27,15 +28,15 @@ public class RequestBuilder {
     private static final String PLATFORM = "android";
 
     public GlobalRequest buildInitSdkRequest(Context context, String appId, List<String> placementIds) {
-        return buildRequest(context, appId, placementIds);
+        return buildRequest(context, appId, placementIds, "");
     }
 
-    public GlobalRequest buildPreloadAdRequest(Context context, String appId, String placementId) {
-        return buildRequest(context, appId, Collections.singletonList(placementId));
+    public GlobalRequest buildPreloadAdRequest(Context context, String appId, String placementId, InitResponse initResponse) {
+        return buildRequest(context, appId, Collections.singletonList(placementId), initResponse.vduid);
     }
 
 
-    private GlobalRequest buildRequest(Context context, String appId, List<String> placementIds) {
+    private GlobalRequest buildRequest(Context context, String appId, List<String> placementIds, String vduid) {
         return new GlobalRequest()
                 .withApp(
                         new App()
@@ -80,7 +81,7 @@ public class RequestBuilder {
                                                                                 .withLanguage(Locale.getDefault().getLanguage())
                                                                                 .withLocale(Locale.getDefault().toString())
                                                                                 .withAndroidId(getAndroidId(context))
-                                                                                .withVduid("")
+                                                                                .withVduid(vduid)
                                                                                 .withOsName(Build.FINGERPRINT)
                                                                                 .withTimeZone(TimeZone.getDefault().getID())
                                                                 )
