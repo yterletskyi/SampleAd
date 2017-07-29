@@ -24,5 +24,4 @@ public interface IApiService {
     @POST("https://api.vungle.com/api/v5/ads")
     Call<PreloadResponse> preloadAd(@Body GlobalRequest request);
 
-
 }
