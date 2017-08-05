@@ -11,6 +11,10 @@ import com.publisher.sample.sdk.OnCompleteListener;
 import com.publisher.sample.sdk.Sdk;
 import com.publisher.sample.sdk.VastCreator;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
+import com.publisher.sample.sdk.vast.Attribute;
+import com.publisher.sample.sdk.vast.Tag;
+import com.publisher.sample.sdk.vast.Value;
+import com.publisher.sample.sdk.vast.VastBuilder;
 import com.publisher.sample.videoplayerapp.api.IApiService;
 
 import java.util.Arrays;

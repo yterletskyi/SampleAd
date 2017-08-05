@@ -1,26 +1,25 @@
 package com.publisher.sample.sdk;
 
-import com.jamesmurty.utils.XMLBuilder;
 import com.publisher.sample.sdk.model.preload.response.Ad;
 import com.publisher.sample.sdk.model.preload.response.PlayPercentage;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
 import com.publisher.sample.sdk.utils.MimeDetector;
 import com.publisher.sample.sdk.vast.Attribute;
-import com.publisher.sample.sdk.vast.IChild;
 import com.publisher.sample.sdk.vast.Tag;
 import com.publisher.sample.sdk.vast.Value;
+import com.publisher.sample.sdk.vast.VastBuilder;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Created by yterletskyi on 26.07.17.
  */
 
 public class VastCreator {
+
+    // TODO: 05.08.17 no impression field specified
+    // TODO: 05.08.17 no duration field specified
 
     private static final String REQUIRED_FIELD = "REQUIRED FIELD";
 
@@ -31,78 +30,82 @@ public class VastCreator {
 
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
 
-        String xml = "";
 
         Tag vast = new Tag("VAST")
                 .withAttributes(
-                        Arrays.<Attribute>asList(
-                                new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-                                new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-                                new Attribute<>("version", "2.0")
-                        )
+                        new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+                        new Attribute<>("xsi:noNamespaceSchemaLocation", "vast.xsd"),
+                        new Attribute<>("version", "3.0")
                 )
                 .withChildren(
-                        Collections.<IChild>singletonList(
-                                new Tag("Ad")
-                                        .withAttributes(
-                                                Collections.<Attribute>singletonList(
-                                                        new Attribute<>("id", "5979ec4b80aedd125355720a")
-                                                )
-                                        )
-                                        .withChildren(
-                                                Collections.<IChild>singletonList(
-                                                        new Tag("InLine")
+                        new Tag("Ad")
+                                .withAttributes(
+                                        new Attribute<>("id", ad.adMarkup.id)
+                                )
+                                .withChildren(
+                                        new Tag("InLine")
+                                                .withChildren(
+                                                        new Tag("AdSystem")
                                                                 .withChildren(
-                                                                        Collections.<IChild>singletonList(
-                                                                                new Value("test in line")
-                                                                        )
+                                                                        new Value("Vungle")
+                                                                ),
+                                                        new Tag("AdTitle")
+                                                                .withChildren(new Value("Vungle Ad")),
+                                                        new Tag("Creatives")
+                                                                .withChildren(
+                                                                        new Tag("Creative")
+                                                                                .withChildren(
+                                                                                        new Tag("Linear")
+                                                                                                .withChildren(
+                                                                                                        new Tag("TrackingEvents")
+                                                                                                                .withChildren(
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "start"))
+                                                                                                                                .withChildren(new Value(quartiles.get(0.0))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "firstQuartile"))
+                                                                                                                                .withChildren(new Value(quartiles.get(0.25))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "midpoint"))
+                                                                                                                                .withChildren(new Value(quartiles.get(0.5))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "thirdQuartile"))
+                                                                                                                                .withChildren(new Value(quartiles.get(0.75))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "complete"))
+                                                                                                                                .withChildren(new Value(quartiles.get(1.0))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "mute"))
+                                                                                                                                .withChildren(new Value(ad.adMarkup.tpat.mute.get(0))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "unmute"))
+                                                                                                                                .withChildren(new Value(ad.adMarkup.tpat.unmute.get(0))),
+                                                                                                                        new Tag("Tracking")
+                                                                                                                                .withAttributes(new Attribute<>("event", "closeLinear"))
+                                                                                                                                .withChildren(new Value(ad.adMarkup.tpat.videoClose.get(0)))
+                                                                                                                ),
+                                                                                                        new Tag("MediaFiles")
+                                                                                                                .withChildren(
+                                                                                                                        new Tag("MediaFile")
+                                                                                                                                .withAttributes(
+                                                                                                                                        new Attribute<>("delivery", "progressive"),
+                                                                                                                                        new Attribute<>("width", ad.adMarkup.videoWidth),
+                                                                                                                                        new Attribute<>("height", ad.adMarkup.videoHeight),
+                                                                                                                                        new Attribute<>("type", mimeType)
+                                                                                                                                )
+                                                                                                                                .withChildren(
+                                                                                                                                        new Value(ad.adMarkup.url)
+                                                                                                                                )
+                                                                                                                )
+                                                                                                )
+                                                                                )
                                                                 )
                                                 )
-                                        )
-                        )
+
+                                )
                 );
 
-
-        try {
-
-            XMLBuilder xmlBuilder = XMLBuilder.create("VAST").a("version", "2.0")
-                    .e("Ad").a("id", ad.adMarkup.id)
-                    .e("InLine")
-                    .e("AdSystem").t("Vungle").up()
-                    .e("AdTitle").t("Vungle Ad").up()
-                    .e("Impression").cdata(REQUIRED_FIELD).up()
-                    .e("Creatives")
-                    .e("Creative")
-                    .e("Linear")
-                    .e("Duration").t(REQUIRED_FIELD).up()
-                    .e("TrackingEvents")
-                    .e("Tracking").a("event", "start").cdata(quartiles.get(0.0)).up()
-                    .e("Tracking").a("event", "firstQuartile").cdata(quartiles.get(0.25)).up()
-                    .e("Tracking").a("event", "midpoint").cdata(quartiles.get(0.5)).up()
-                    .e("Tracking").a("event", "thirdQuartile").cdata(quartiles.get(0.75)).up()
-                    .e("Tracking").a("event", "complete").cdata(quartiles.get(1.0)).up()
-                    .e("Tracking").a("event", "mute").cdata(ad.adMarkup.tpat.mute.get(0)).up()
-                    .e("Tracking").a("event", "unmute").cdata(ad.adMarkup.tpat.unmute.get(0)).up()
-                    .e("Tracking").a("event", "closeLinear").cdata(ad.adMarkup.tpat.videoClose.get(0)).up()
-                    .up()
-                    .e("MediaFiles")
-                    .e("MediaFile")
-                    .a("delivery", "progressive")
-                    .a("width", String.valueOf(ad.adMarkup.videoWidth))
-                    .a("height", String.valueOf(ad.adMarkup.videoHeight))
-                    .a("type", mimeType)
-                    .cdata(ad.adMarkup.url);
-
-            Properties outputProperties = new Properties();
-            outputProperties.put(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
-
-            xml = xmlBuilder.asString(outputProperties);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return xml;
+        return new VastBuilder().buildFromTag(vast);
     }
 
     private Map<Double, String> composeQuartilesMap(Ad ad) {

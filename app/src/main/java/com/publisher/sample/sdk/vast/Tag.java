@@ -1,12 +1,14 @@
 package com.publisher.sample.sdk.vast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by yterletskyi on 05.08.17.
  */
 
-public class Tag implements IChild<List<Attribute>> {
+public class Tag implements IChild {
 
     private String mName;
     private List<Attribute> mAttributes;
@@ -14,15 +16,17 @@ public class Tag implements IChild<List<Attribute>> {
 
     public Tag(String name) {
         mName = name;
+        mChildren = new ArrayList<>();
+        mAttributes = new ArrayList<>();
     }
 
-    public Tag withAttributes(List<Attribute> attributes) {
-        mAttributes = attributes;
+    public Tag withAttributes(Attribute... attributes) {
+        mAttributes = Arrays.asList(attributes);
         return this;
     }
 
-    public Tag withChildren(List<IChild> children) {
-        mChildren = children;
+    public Tag withChildren(IChild... children) {
+        mChildren = Arrays.asList(children);
         return this;
     }
 
