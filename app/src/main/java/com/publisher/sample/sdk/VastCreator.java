@@ -5,7 +5,13 @@ import com.publisher.sample.sdk.model.preload.response.Ad;
 import com.publisher.sample.sdk.model.preload.response.PlayPercentage;
 import com.publisher.sample.sdk.model.preload.response.PreloadResponse;
 import com.publisher.sample.sdk.utils.MimeDetector;
+import com.publisher.sample.sdk.vast.Attribute;
+import com.publisher.sample.sdk.vast.IChild;
+import com.publisher.sample.sdk.vast.Tag;
+import com.publisher.sample.sdk.vast.Value;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -26,6 +32,36 @@ public class VastCreator {
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
 
         String xml = "";
+
+        Tag vast = new Tag("VAST")
+                .withAttributes(
+                        Arrays.<Attribute>asList(
+                                new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+                                new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+                                new Attribute<>("version", "2.0")
+                        )
+                )
+                .withChildren(
+                        Collections.<IChild>singletonList(
+                                new Tag("Ad")
+                                        .withAttributes(
+                                                Collections.<Attribute>singletonList(
+                                                        new Attribute<>("id", "5979ec4b80aedd125355720a")
+                                                )
+                                        )
+                                        .withChildren(
+                                                Collections.<IChild>singletonList(
+                                                        new Tag("InLine")
+                                                                .withChildren(
+                                                                        Collections.<IChild>singletonList(
+                                                                                new Value("test in line")
+                                                                        )
+                                                                )
+                                                )
+                                        )
+                        )
+                );
+
 
         try {
 

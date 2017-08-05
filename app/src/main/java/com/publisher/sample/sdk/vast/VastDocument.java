@@ -4,6 +4,7 @@ package com.publisher.sample.sdk.vast;
  * Created by yterletskyi on 05.08.17.
  */
 
+@Deprecated
 public class VastDocument {
 
     private Tag mVast;
@@ -20,16 +21,5 @@ public class VastDocument {
                 new Attribute<>("version", version)
         );
     }
-
-    public VastDocument withAd(String id) {
-        Tag adTag = new Tag("Ad");
-        adTag.addAttribute(new Attribute<String>("id", id));
-        mVast.addChild(adTag);
-    }
-
-    public VastDocument withInLine() {
-
-    }
-
 
 }
