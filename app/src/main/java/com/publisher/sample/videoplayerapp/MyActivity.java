@@ -91,6 +91,11 @@ public class MyActivity extends AppCompatActivity {
             public void onAdFailedToLoad() {
                 Log.i(TAG, "onAdFailedToLoad: ");
             }
+
+            @Override
+            public void onAdCompleted() {
+                Log.i(TAG, "vastComplete: ");
+            }
         });
     }
 

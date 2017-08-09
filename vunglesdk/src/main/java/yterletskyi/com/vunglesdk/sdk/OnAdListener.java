@@ -10,6 +10,8 @@ public interface OnAdListener {
 
     void onAdStarted();
 
+    void onAdCompleted();
+
     void onAdClosed();
 
     void onAdFailedToLoad();
