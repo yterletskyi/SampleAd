@@ -1,1 +1,1 @@
-include ':app', ':vunglesdk'
+include ':app', ':vunglesdk', ':nexage'

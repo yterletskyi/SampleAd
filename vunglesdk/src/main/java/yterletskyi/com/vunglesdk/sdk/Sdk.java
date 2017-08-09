@@ -92,6 +92,6 @@ public class Sdk {
     }
 
     public void playAd() {
-        
+
     }
 }
