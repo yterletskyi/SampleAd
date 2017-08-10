@@ -1,11 +1,16 @@
 package yterletskyi.com.vunglesdk.sdk;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.nexage.sourcekit.vast.VASTPlayer;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -34,6 +39,7 @@ public class Sdk {
     private OnAdListener mOnAdListener;
     private String mVastXml;
     private VASTPlayer mVASTPlayer;
+    private File mPostBundleFile;
 
     private InitResponse mInitResponse;
 
@@ -81,6 +87,7 @@ public class Sdk {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
                 PreloadResponse result = response.body();
+                downloadPostBundle(result.ads.get(0).adMarkup.postBundle);
                 formVastXml(result);
                 mOnAdListener.onAdLoaded();
             }
@@ -97,35 +104,86 @@ public class Sdk {
         mVastXml = vastCreator.build(result);
     }
 
+    private void downloadPostBundle(String postBundleUrl) {
+        final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
+        Log.i(TAG, "downloadPostBundle: " + fileName);
+        final File file;
+        try {
+            file = File.createTempFile(fileName, null, mContext.getCacheDir());
+            DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
+            downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
+                @Override
+                public void onDownloadCompleted(File downloadedFile) {
+                    mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
+                    unzipFile(downloadedFile, mPostBundleFile);
+                }
+
+                @Override
+                public void onDownloadFailed() {
+                    Log.i(TAG, "onDownloadFailed: ");
+                }
+            });
+            downloadTask.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unzipFile(File file, File destination) {
+        Log.i(TAG, "unzipFile: ");
+        UnzipManager unzipManager = new UnzipManager(file, destination);
+        unzipManager.unzip();
+        Log.i(TAG, "unzipFile: finished");
+    }
+
     public void playAd() {
-        mVASTPlayer = new VASTPlayer(mContext, new VASTPlayer.VASTPlayerListener() {
-            @Override
-            public void vastReady() {
-                mVASTPlayer.play();
-                mOnAdListener.onAdStarted();
-            }
+        showPostAdCompanion();
 
-            @Override
-            public void vastError(int error) {
-                mOnAdListener.onAdFailedToLoad();
-            }
+//        mVASTPlayer = new VASTPlayer(mContext, new VASTPlayer.VASTPlayerListener() {
+//            @Override
+//            public void vastReady() {
+//                mVASTPlayer.play();
+//                mOnAdListener.onAdStarted();
+//            }
+//
+//            @Override
+//            public void vastError(int error) {
+//                mOnAdListener.onAdFailedToLoad();
+//            }
+//
+//            @Override
+//            public void vastClick() {
+//                Log.i(TAG, "vastClick: ");
+//            }
+//
+//            @Override
+//            public void vastComplete() {
+//                mOnAdListener.onAdCompleted();
+//                showPostAdCompanion();
+//            }
+//
+//            @Override
+//            public void vastDismiss() {
+//            }
+//        });
+//        mVASTPlayer.loadVideoWithData(mVastXml);
+    }
 
+    private void showPostAdCompanion() {
+        File[] indexHtmls = mPostBundleFile.listFiles(new FilenameFilter() {
             @Override
-            public void vastClick() {
-                Log.i(TAG, "vastClick: ");
-            }
-
-            @Override
-            public void vastComplete() {
-                mOnAdListener.onAdCompleted();
-            }
-
-            @Override
-            public void vastDismiss() {
-                mOnAdListener.onAdClosed();
+            public boolean accept(File file, String s) {
+                return s.equals("index.html");
             }
         });
-        mVASTPlayer.loadVideoWithData(mVastXml);
+        File indexHtml = indexHtmls[0];
+        showWebViewActivity(indexHtml);
+    }
+
+    private void showWebViewActivity(File indexHtml) {
+        Intent intent = new Intent(mContext, WebViewActivity.class);
+        intent.putExtra("html", indexHtml);
+        mContext.startActivity(intent);
     }
 
 }
