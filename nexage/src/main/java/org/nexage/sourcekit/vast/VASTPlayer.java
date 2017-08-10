@@ -147,14 +147,14 @@ public class VASTPlayer {
     }
 
     public interface VASTPlayerListener {
-        public void vastReady();
+        void vastReady();
 
-        public void vastError(int error);
+        void vastError(int error);
 
-        public void vastClick();
+        void vastClick();
 
-        public void vastComplete();
+        void vastComplete();
 
-        public void vastDismiss();
+        void vastDismiss();
     }
 }
