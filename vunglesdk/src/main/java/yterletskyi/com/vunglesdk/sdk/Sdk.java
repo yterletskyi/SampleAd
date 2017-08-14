@@ -9,8 +9,10 @@ import android.util.Log;
 import org.nexage.sourcekit.vast.VASTPlayer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 import retrofit2.Call;
@@ -116,6 +118,7 @@ public class Sdk {
                 public void onDownloadCompleted(File downloadedFile) {
                     mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
                     unzipFile(downloadedFile, mPostBundleFile);
+                    appendFunctionToIndexHtml();
                 }
 
                 @Override
@@ -127,6 +130,21 @@ public class Sdk {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void appendFunctionToIndexHtml() {
+        File html = findIndexHtmlFile();
+
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(html, "rw");
+            long aPositionWhereIWantToGo = 99;
+            randomAccessFile.seek(aPositionWhereIWantToGo);
+            randomAccessFile.write("Im in teh fil, writn bites".getBytes());
+            randomAccessFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void unzipFile(File file, File destination) {
@@ -169,14 +187,18 @@ public class Sdk {
 //        mVASTPlayer.loadVideoWithData(mVastXml);
     }
 
-    private void showPostAdCompanion() {
+    private File findIndexHtmlFile() {
         File[] indexHtmls = mPostBundleFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
                 return s.equals("index.html");
             }
         });
-        File indexHtml = indexHtmls[0];
+        return indexHtmls[0];
+    }
+
+    private void showPostAdCompanion() {
+        File indexHtml = findIndexHtmlFile();
         showWebViewActivity(indexHtml);
     }
 

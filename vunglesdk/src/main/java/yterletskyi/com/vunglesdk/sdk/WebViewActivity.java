@@ -2,6 +2,7 @@ package yterletskyi.com.vunglesdk.sdk;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import java.io.File;
@@ -20,5 +21,21 @@ public class WebViewActivity extends Activity {
         WebView webView = findViewById(R.id.web_view_root);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(html.toURI().toString());
+        webView.addJavascriptInterface(new CompanionJavaScriptInterface(this), "");
+    }
+
+    static class CompanionJavaScriptInterface {
+
+        private Activity mActivity;
+
+        public CompanionJavaScriptInterface(Activity activity) {
+            mActivity = activity;
+        }
+
+        @JavascriptInterface
+        public void actionClicked(String s) {
+            mActivity.finish();
+        }
+
     }
 }
