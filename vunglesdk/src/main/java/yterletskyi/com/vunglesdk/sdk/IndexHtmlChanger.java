@@ -8,9 +8,9 @@ import java.io.File;
 
 public class IndexHtmlChanger {
 
-    private static final String JAVASCRIPT_INTERFACE_NAME = "Android";
     private static final String TARGET = "return actionClicked(s);";
-    private static final String REPLACEMENT = "return " + JAVASCRIPT_INTERFACE_NAME + ".actionClicked(s);";
+    private static final String REPLACEMENT = "return "
+            + PostVideoJavascriptInterface.JAVASCRIPT_INTERFACE_NAME + ".actionClicked(s);";
 
     public void change(File indexHtmlChanger) {
         TextFileChanger textFileChanger = new TextFileChanger(indexHtmlChanger);
