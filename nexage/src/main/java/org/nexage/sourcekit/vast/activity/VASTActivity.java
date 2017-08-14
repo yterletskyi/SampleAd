@@ -728,9 +728,15 @@ public class VASTActivity extends Activity implements OnCompletionListener,
 
             if (VASTPlayer.listener != null) {
                 VASTPlayer.listener.vastComplete();
+                // TODO: 14.08.17 I added this
+                closePlayer();
             }
         }
 
+    }
+
+    private void closePlayer() {
+        closeClicked();
     }
 
     private void overlayClicked() {
