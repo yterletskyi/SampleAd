@@ -1,7 +1,5 @@
 package yterletskyi.com.vunglesdk.sdk;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,7 +27,6 @@ public class UnzipManager {
             ZipInputStream zipInputStream = new ZipInputStream(fileInputStream);
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                Log.i("VungleSdk", "Unzipping " + zipEntry.getName());
 
                 if (zipEntry.isDirectory()) {
                     makeDir(zipEntry.getName());
@@ -48,7 +45,7 @@ public class UnzipManager {
             }
             zipInputStream.close();
         } catch (Exception e) {
-            Log.i("VungleSdk", "unzip failed " + e.toString());
+            e.printStackTrace();
         }
     }
 

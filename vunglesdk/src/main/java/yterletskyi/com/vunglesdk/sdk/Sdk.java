@@ -110,7 +110,6 @@ public class Sdk {
 
     private void downloadPostBundle(String postBundleUrl) {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
-        Log.i(TAG, "downloadPostBundle: " + fileName);
         final File file;
         try {
             file = File.createTempFile(fileName, null, mContext.getCacheDir());
@@ -120,7 +119,7 @@ public class Sdk {
                 public void onDownloadCompleted(File downloadedFile) {
                     mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
                     unzipFile(downloadedFile, mPostBundleFile);
-                    changeIndexHtmlScript(findIndexHtmlFile());
+                    injectAndroidIntoIndexHtmlScript(findIndexHtmlFile());
                 }
 
                 @Override
@@ -134,16 +133,14 @@ public class Sdk {
         }
     }
 
-    private void changeIndexHtmlScript(File indexHtmlFile) {
+    private void injectAndroidIntoIndexHtmlScript(File indexHtmlFile) {
         IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
         indexHtmlChanger.change(indexHtmlFile);
     }
 
     private void unzipFile(File file, File destination) {
-        Log.i(TAG, "unzipFile: ");
         UnzipManager unzipManager = new UnzipManager(file, destination);
         unzipManager.unzip();
-        Log.i(TAG, "unzipFile: finished");
     }
 
     public void playAd() {
@@ -174,6 +171,7 @@ public class Sdk {
 
             @Override
             public void vastDismiss() {
+
             }
         });
         mVASTPlayer.loadVideoWithData(mVastXml);
@@ -202,6 +200,7 @@ public class Sdk {
             @Override
             public void onCloseClicked() {
                 webViewDialog.dismiss();
+                mOnAdListener.onAdClosed();
             }
 
             @Override
