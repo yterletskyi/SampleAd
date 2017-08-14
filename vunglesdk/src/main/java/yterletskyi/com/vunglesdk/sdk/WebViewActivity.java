@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -21,7 +22,7 @@ public class WebViewActivity extends Activity {
         WebView webView = findViewById(R.id.web_view_root);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(html.toURI().toString());
-        webView.addJavascriptInterface(new CompanionJavaScriptInterface(this), "");
+        webView.addJavascriptInterface(new CompanionJavaScriptInterface(this), "Android");
     }
 
     static class CompanionJavaScriptInterface {
@@ -34,7 +35,10 @@ public class WebViewActivity extends Activity {
 
         @JavascriptInterface
         public void actionClicked(String s) {
-            mActivity.finish();
+            Toast.makeText(mActivity, s, Toast.LENGTH_SHORT).show();
+            if (s.equals("close")) {
+                mActivity.finish();
+            }
         }
 
     }

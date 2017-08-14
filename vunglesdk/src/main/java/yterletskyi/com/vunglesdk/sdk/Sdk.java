@@ -9,10 +9,8 @@ import android.util.Log;
 import org.nexage.sourcekit.vast.VASTPlayer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.List;
 
 import retrofit2.Call;
@@ -118,7 +116,7 @@ public class Sdk {
                 public void onDownloadCompleted(File downloadedFile) {
                     mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
                     unzipFile(downloadedFile, mPostBundleFile);
-                    appendFunctionToIndexHtml();
+                    changeIndexHtmlScript(findIndexHtmlFile());
                 }
 
                 @Override
@@ -132,19 +130,9 @@ public class Sdk {
         }
     }
 
-    private void appendFunctionToIndexHtml() {
-        File html = findIndexHtmlFile();
-
-        try {
-            RandomAccessFile randomAccessFile = new RandomAccessFile(html, "rw");
-            long aPositionWhereIWantToGo = 99;
-            randomAccessFile.seek(aPositionWhereIWantToGo);
-            randomAccessFile.write("Im in teh fil, writn bites".getBytes());
-            randomAccessFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    private void changeIndexHtmlScript(File indexHtmlFile) {
+        IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
+        indexHtmlChanger.change(indexHtmlFile);
     }
 
     private void unzipFile(File file, File destination) {

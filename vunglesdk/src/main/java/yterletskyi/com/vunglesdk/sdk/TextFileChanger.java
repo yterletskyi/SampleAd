@@ -1,8 +1,9 @@
 package yterletskyi.com.vunglesdk.sdk;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.IOException;
 
 /**
  * Created by yterletskyi on 10.08.17.
@@ -10,41 +11,22 @@ import java.util.Scanner;
 
 public class TextFileChanger {
 
-    private static final String TEMP_FILE_NAME = "t1e2m3p";
+    private static final String ENCODING = "UTF-8";
+
     private File mFile;
 
     public TextFileChanger(File file) {
         mFile = file;
     }
 
-    public void insertTextToFile(String textToInsert) {
-        Scanner scanner = null;
+    public void replaceInFile(String target, String replacement) {
         try {
-            scanner = new Scanner(mFile);
-            String text = scanner.useDelimiter("\\A").next();
-            int lastBracePosition = text.lastIndexOf("}");
-
-        } catch (FileNotFoundException e) {
+            String content = FileUtils.readFileToString(mFile, ENCODING);
+            content = content.replace(target, replacement);
+            FileUtils.writeStringToFile(mFile, content, ENCODING);
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            scanner.close();
         }
-
-
-    }
-
-    private String writeFirstPart() {
-        File file = new File(TEMP_FILE_NAME);
-
-
-    }
-
-    private void writeToFile() {
-
-    }
-
-    private void readSecondPart() {
-
     }
 
 }
