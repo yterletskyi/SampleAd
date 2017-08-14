@@ -6,22 +6,25 @@
 
     <Button
         android:id="@+id/btn_init"
+        style="@style/MyButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Init SDK"/>
 
     <Button
         android:id="@+id/btn_preload"
+        style="@style/MyButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="preload ad"/>
+        android:text="Preload ad"/>
 
     <Button
         android:id="@+id/btn_play"
+        style="@style/MyButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="play ad"/>
+        android:text="Play ad"/>
 
 </LinearLayout>
