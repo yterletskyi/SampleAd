@@ -1,5 +1,6 @@
 package com.publisher.sample.videoplayerapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,8 @@ public class MyActivity extends AppCompatActivity {
             }
         });
 
-        mSdk = new Sdk(this);
+        Context applicationContext = getApplicationContext();
+        mSdk = Sdk.getInstance(applicationContext);
     }
 
     private void initSdk() {
@@ -100,7 +102,7 @@ public class MyActivity extends AppCompatActivity {
     }
 
     private void playAd() {
-        mSdk.playAd();
+        mSdk.playAd(this);
     }
 
     private void enableButton(@IdRes int btnId) {

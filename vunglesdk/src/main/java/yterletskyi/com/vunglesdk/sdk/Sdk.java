@@ -36,8 +36,9 @@ public class Sdk {
     private static final String VERSION = "5.0.0";
     private static final String TAG = "VungleSdk";
     private static final String API_ENDPOINT = "https://api.vungle.com";
+    private static Sdk INSTANCE;
     private String mAppId;
-    private Context mContext;
+    private Context mApplicationContext;
     private IApiService mApiService;
     private OnAdListener mOnAdListener;
     private String mVastXml;
@@ -47,9 +48,16 @@ public class Sdk {
     private InitResponse mInitResponse;
     private PreloadResponse mPreloadResponse;
 
-    public Sdk(Context context) {
-        mContext = context;
+    private Sdk(Context applicationContext) {
+        mApplicationContext = applicationContext;
         createApiInterface();
+    }
+
+    public static Sdk getInstance(Context applicationContext) {
+        if (INSTANCE == null) {
+            INSTANCE = new Sdk(applicationContext);
+        }
+        return INSTANCE;
     }
 
     private void createApiInterface() {
@@ -64,7 +72,7 @@ public class Sdk {
         mAppId = appId;
 
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest request = requestBuilder.buildInitSdkRequest(mContext, mAppId, placementList);
+        GlobalRequest request = requestBuilder.buildInitSdkRequest(mApplicationContext, mAppId, placementList);
 
         Call<InitResponse> call = mApiService.initSDK(Sdk.VERSION, request);
         call.enqueue(new Callback<InitResponse>() {
@@ -84,7 +92,7 @@ public class Sdk {
     public void preloadAd(String placementId, OnAdListener onAdListener) {
         mOnAdListener = onAdListener;
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest request = requestBuilder.buildPreloadAdRequest(mContext, mAppId, placementId, mInitResponse);
+        GlobalRequest request = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, placementId, mInitResponse);
 
         Call<PreloadResponse> responseCall = mApiService.preloadAd(request);
         responseCall.enqueue(new Callback<PreloadResponse>() {
@@ -112,7 +120,7 @@ public class Sdk {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
         final File file;
         try {
-            file = File.createTempFile(fileName, null, mContext.getCacheDir());
+            file = File.createTempFile(fileName, null, mApplicationContext.getCacheDir());
             DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
             downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
                 @Override
@@ -143,10 +151,10 @@ public class Sdk {
         unzipManager.unzip();
     }
 
-    public void playAd() {
+    public void playAd(final Activity activity) {
 //        showPostAdCompanion();
 
-        mVASTPlayer = new VASTPlayer(mContext, new VASTPlayer.VASTPlayerListener() {
+        mVASTPlayer = new VASTPlayer(activity, new VASTPlayer.VASTPlayerListener() {
             @Override
             public void vastReady() {
                 mVASTPlayer.play();
@@ -166,7 +174,7 @@ public class Sdk {
             @Override
             public void vastComplete() {
                 mOnAdListener.onAdCompleted();
-                showPostAdCompanion();
+                showPostAdCompanion(activity);
             }
 
             @Override
@@ -187,14 +195,14 @@ public class Sdk {
         return indexHtmls[0];
     }
 
-    private void showPostAdCompanion() {
+    private void showPostAdCompanion(Activity activity) {
         File indexHtml = findIndexHtmlFile();
-        showWebViewDialog(indexHtml);
+        showWebViewDialog(activity, indexHtml);
     }
 
-    private void showWebViewDialog(File indexHtml) {
-        ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        final WebViewDialog webViewDialog = new WebViewDialog(mContext, android.R.style.Theme_NoTitleBar_Fullscreen);
+    private void showWebViewDialog(final Activity activity, File indexHtml) {
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        final WebViewDialog webViewDialog = new WebViewDialog(activity, android.R.style.Theme_NoTitleBar_Fullscreen);
         webViewDialog.setIndexHtmlFile(indexHtml);
         webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
             @Override
@@ -206,7 +214,7 @@ public class Sdk {
             @Override
             public void onReplayClicked() {
                 webViewDialog.dismiss();
-                playAd();
+                playAd(activity);
             }
 
             @Override
@@ -218,13 +226,14 @@ public class Sdk {
         webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         });
     }
 
     private void openBrowseIntent(String url) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        mContext.startActivity(browserIntent);
+        Intent browseIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        browseIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mApplicationContext.startActivity(browseIntent);
     }
 }
