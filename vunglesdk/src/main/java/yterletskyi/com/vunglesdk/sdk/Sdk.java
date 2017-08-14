@@ -1,10 +1,13 @@
 package yterletskyi.com.vunglesdk.sdk;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.nexage.sourcekit.vast.VASTPlayer;
 
@@ -187,13 +190,36 @@ public class Sdk {
 
     private void showPostAdCompanion() {
         File indexHtml = findIndexHtmlFile();
-        showWebViewActivity(indexHtml);
+        showWebViewDialog(indexHtml);
     }
 
-    private void showWebViewActivity(File indexHtml) {
-        Intent intent = new Intent(mContext, WebViewActivity.class);
-        intent.putExtra("html", indexHtml);
-        mContext.startActivity(intent);
+    private void showWebViewDialog(File indexHtml) {
+        ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        final WebViewDialog webViewDialog = new WebViewDialog(mContext, android.R.style.Theme_NoTitleBar_Fullscreen);
+        webViewDialog.setIndexHtmlFile(indexHtml);
+        webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
+            @Override
+            public void onCloseClicked() {
+                webViewDialog.dismiss();
+            }
+
+            @Override
+            public void onReplayClicked() {
+                playAd();
+            }
+
+            @Override
+            public void onDownloadClicked() {
+                Toast.makeText(mContext, "donwlaod", Toast.LENGTH_SHORT).show();
+            }
+        });
+        webViewDialog.show();
+        webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        });
     }
 
 }

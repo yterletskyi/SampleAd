@@ -1,8 +1,6 @@
 package yterletskyi.com.vunglesdk.sdk;
 
-import android.app.Activity;
 import android.webkit.JavascriptInterface;
-import android.widget.Toast;
 
 /**
  * Created by yterletskyi on 14.08.17.
@@ -11,20 +9,40 @@ import android.widget.Toast;
 public class PostVideoJavascriptInterface {
 
     public static final String JAVASCRIPT_INTERFACE_NAME = "Android";
+    private static final String ACTION_CLOSE = "close";
+    private static final String ACTION_REPLAY = "replay";
+    private static final String ACTION_DOWNLOAD = "download";
 
-    private Activity mActivity;
-
-    public PostVideoJavascriptInterface(Activity activity) {
-        mActivity = activity;
-    }
+    private OnPostVideoCompanionListener mOnPostVideoCompanionListener;
 
     @JavascriptInterface
     public void actionClicked(String s) {
-        Toast.makeText(mActivity, s, Toast.LENGTH_SHORT).show();
-        if (s.equals("close")) {
-            mActivity.finish();
+        switch (s) {
+            case ACTION_CLOSE:
+                close();
+                break;
+            case ACTION_REPLAY:
+                replay();
+                break;
+            case ACTION_DOWNLOAD:
+                download();
+                break;
         }
     }
 
+    private void download() {
+        mOnPostVideoCompanionListener.onDownloadClicked();
+    }
 
+    private void replay() {
+        mOnPostVideoCompanionListener.onReplayClicked();
+    }
+
+    private void close() {
+        mOnPostVideoCompanionListener.onCloseClicked();
+    }
+
+    public void setOnPostVideoCompanionListener(OnPostVideoCompanionListener onPostVideoCompanionListener) {
+        mOnPostVideoCompanionListener = onPostVideoCompanionListener;
+    }
 }
