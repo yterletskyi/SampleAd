@@ -32,4 +32,6 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile project(path: ':nexage')
+
+    compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
 }

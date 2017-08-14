@@ -1,7 +1,10 @@
 package yterletskyi.com.vunglesdk.sdk;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -42,6 +45,7 @@ public class Sdk {
     private File mPostBundleFile;
 
     private InitResponse mInitResponse;
+    private PreloadResponse mPreloadResponse;
 
     public Sdk(Context context) {
         mContext = context;
@@ -86,9 +90,9 @@ public class Sdk {
         responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
-                PreloadResponse result = response.body();
-                downloadPostBundle(result.ads.get(0).adMarkup.postBundle);
-                formVastXml(result);
+                mPreloadResponse = response.body();
+                downloadPostBundle(mPreloadResponse.ads.get(0).adMarkup.postBundle);
+                formVastXml(mPreloadResponse);
                 mOnAdListener.onAdLoaded();
             }
 
@@ -106,7 +110,6 @@ public class Sdk {
 
     private void downloadPostBundle(String postBundleUrl) {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
-        Log.i(TAG, "downloadPostBundle: " + fileName);
         final File file;
         try {
             file = File.createTempFile(fileName, null, mContext.getCacheDir());
@@ -116,6 +119,7 @@ public class Sdk {
                 public void onDownloadCompleted(File downloadedFile) {
                     mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
                     unzipFile(downloadedFile, mPostBundleFile);
+                    injectAndroidIntoIndexHtmlScript(findIndexHtmlFile());
                 }
 
                 @Override
@@ -129,61 +133,98 @@ public class Sdk {
         }
     }
 
+    private void injectAndroidIntoIndexHtmlScript(File indexHtmlFile) {
+        IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
+        indexHtmlChanger.change(indexHtmlFile);
+    }
+
     private void unzipFile(File file, File destination) {
-        Log.i(TAG, "unzipFile: ");
         UnzipManager unzipManager = new UnzipManager(file, destination);
         unzipManager.unzip();
-        Log.i(TAG, "unzipFile: finished");
     }
 
     public void playAd() {
-        showPostAdCompanion();
+//        showPostAdCompanion();
 
-//        mVASTPlayer = new VASTPlayer(mContext, new VASTPlayer.VASTPlayerListener() {
-//            @Override
-//            public void vastReady() {
-//                mVASTPlayer.play();
-//                mOnAdListener.onAdStarted();
-//            }
-//
-//            @Override
-//            public void vastError(int error) {
-//                mOnAdListener.onAdFailedToLoad();
-//            }
-//
-//            @Override
-//            public void vastClick() {
-//                Log.i(TAG, "vastClick: ");
-//            }
-//
-//            @Override
-//            public void vastComplete() {
-//                mOnAdListener.onAdCompleted();
-//                showPostAdCompanion();
-//            }
-//
-//            @Override
-//            public void vastDismiss() {
-//            }
-//        });
-//        mVASTPlayer.loadVideoWithData(mVastXml);
+        mVASTPlayer = new VASTPlayer(mContext, new VASTPlayer.VASTPlayerListener() {
+            @Override
+            public void vastReady() {
+                mVASTPlayer.play();
+                mOnAdListener.onAdStarted();
+            }
+
+            @Override
+            public void vastError(int error) {
+                mOnAdListener.onAdFailedToLoad();
+            }
+
+            @Override
+            public void vastClick() {
+                Log.i(TAG, "vastClick: ");
+            }
+
+            @Override
+            public void vastComplete() {
+                mOnAdListener.onAdCompleted();
+                showPostAdCompanion();
+            }
+
+            @Override
+            public void vastDismiss() {
+
+            }
+        });
+        mVASTPlayer.loadVideoWithData(mVastXml);
     }
 
-    private void showPostAdCompanion() {
+    private File findIndexHtmlFile() {
         File[] indexHtmls = mPostBundleFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
                 return s.equals("index.html");
             }
         });
-        File indexHtml = indexHtmls[0];
-        showWebViewActivity(indexHtml);
+        return indexHtmls[0];
     }
 
-    private void showWebViewActivity(File indexHtml) {
-        Intent intent = new Intent(mContext, WebViewActivity.class);
-        intent.putExtra("html", indexHtml);
-        mContext.startActivity(intent);
+    private void showPostAdCompanion() {
+        File indexHtml = findIndexHtmlFile();
+        showWebViewDialog(indexHtml);
     }
 
+    private void showWebViewDialog(File indexHtml) {
+        ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        final WebViewDialog webViewDialog = new WebViewDialog(mContext, android.R.style.Theme_NoTitleBar_Fullscreen);
+        webViewDialog.setIndexHtmlFile(indexHtml);
+        webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
+            @Override
+            public void onCloseClicked() {
+                webViewDialog.dismiss();
+                mOnAdListener.onAdClosed();
+            }
+
+            @Override
+            public void onReplayClicked() {
+                webViewDialog.dismiss();
+                playAd();
+            }
+
+            @Override
+            public void onDownloadClicked() {
+                openBrowseIntent(mPreloadResponse.ads.get(0).adMarkup.callToActionUrl);
+            }
+        });
+        webViewDialog.show();
+        webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                ((Activity) mContext).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        });
+    }
+
+    private void openBrowseIntent(String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        mContext.startActivity(browserIntent);
+    }
 }
