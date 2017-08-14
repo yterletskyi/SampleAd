@@ -1,9 +1,7 @@
 package yterletskyi.com.vunglesdk.sdk;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -37,7 +35,7 @@ public class WebViewDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web_view);
+        setContentView(R.layout.web_view);
 
         WebView webView = findViewById(R.id.web_view_root);
         webView.getSettings().setJavaScriptEnabled(true);
