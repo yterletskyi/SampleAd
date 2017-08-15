@@ -541,9 +541,9 @@ public class VASTActivity extends Activity implements OnCompletionListener,
 
     @Override
     public void onBackPressed() {
-        VASTLog.d(TAG, "entered onBackPressed");
-        this.closeClicked();
-
+        // TODO: 15.08.17 I changed this
+//        VASTLog.d(TAG, "entered onBackPressed");
+//        this.closeClicked();
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -722,7 +722,8 @@ public class VASTActivity extends Activity implements OnCompletionListener,
         stopVideoProgressTimer();
         stopToolBarTimer();
         mButtonPanel.setVisibility(VISIBLE);
-        mPlayPauseButton.setImageDrawable(mPlayDrawable);
+        // TODO: 15.08.17 I commented this
+//        mPlayPauseButton.setImageDrawable(mPlayDrawable);
         if (!mIsPlayBackError && !mIsCompleted) {
             mIsCompleted = true;
             this.processEvent(TRACKING_EVENTS_TYPE.complete);

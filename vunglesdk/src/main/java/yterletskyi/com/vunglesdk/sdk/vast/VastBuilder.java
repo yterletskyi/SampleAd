@@ -63,7 +63,6 @@ public class VastBuilder {
 
     private XMLBuilder fillAttributes(XMLBuilder xmlBuilder, Tag tag) {
         for (Attribute attribute : tag.getAttributes()) {
-            // TODO: 05.08.17 check toString() here
             xmlBuilder.a(attribute.getName(), attribute.getValue().toString());
         }
         return xmlBuilder;

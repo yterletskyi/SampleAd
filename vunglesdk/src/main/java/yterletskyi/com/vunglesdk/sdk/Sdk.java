@@ -13,8 +13,9 @@ import org.nexage.sourcekit.vast.VASTPlayer;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,16 +41,14 @@ public class Sdk {
     private String mAppId;
     private Context mApplicationContext;
     private IApiService mApiService;
-    private OnAdListener mOnAdListener;
-    private String mVastXml;
     private VASTPlayer mVASTPlayer;
-    private File mPostBundleFile;
+    private Map<String, VideoAd> mAdMap;
 
     private InitResponse mInitResponse;
-    private PreloadResponse mPreloadResponse;
 
     private Sdk(Context applicationContext) {
         mApplicationContext = applicationContext;
+        mAdMap = new HashMap<>();
         createApiInterface();
     }
 
@@ -89,59 +88,72 @@ public class Sdk {
         });
     }
 
-    public void preloadAd(String placementId, OnAdListener onAdListener) {
-        mOnAdListener = onAdListener;
+    private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest request = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, placementId, mInitResponse);
+        GlobalRequest globalRequest = new GlobalRequest();
+        if (mInitResponse != null) {
+            globalRequest = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
+        }
+        return globalRequest;
+    }
 
-        Call<PreloadResponse> responseCall = mApiService.preloadAd(request);
+    public void preloadAd(String placementId, OnAdListener onAdListener) {
+        final VideoAd videoAd = new VideoAd(placementId);
+        videoAd.setOnAdListener(onAdListener);
+        mAdMap.put(placementId, videoAd);
+
+        GlobalRequest preloadRequest = buildPreloadRequestForAd(videoAd);
+
+        Call<PreloadResponse> responseCall = mApiService.preloadAd(preloadRequest);
         responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
-                mPreloadResponse = response.body();
-                downloadPostBundle(mPreloadResponse.ads.get(0).adMarkup.postBundle);
-                formVastXml(mPreloadResponse);
-                mOnAdListener.onAdLoaded();
+                try {
+                    PreloadResponse body = response.body();
+                    videoAd.setPreloadResponse(body);
+                    downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
+                    String vast = formVastXml(body);
+                    videoAd.setVastXml(vast);
+                    videoAd.getOnAdListener().onAdLoaded();
+                } catch (Exception e) {
+                    videoAd.getOnAdListener().onAdFailedToLoad();
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<PreloadResponse> call, @NonNull Throwable t) {
-                mOnAdListener.onAdFailedToLoad();
+                videoAd.getOnAdListener().onAdFailedToLoad();
             }
         });
     }
 
-    private void formVastXml(PreloadResponse result) {
+    private String formVastXml(PreloadResponse result) {
         VastCreator vastCreator = new VastCreator();
-        mVastXml = vastCreator.build(result);
+        return vastCreator.build(result);
     }
 
-    private void downloadPostBundle(String postBundleUrl) {
+    private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) throws Exception {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
-        final File file;
-        try {
-            file = File.createTempFile(fileName, null, mApplicationContext.getCacheDir());
-            DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
-            downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
-                @Override
-                public void onDownloadCompleted(File downloadedFile) {
-                    mPostBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
-                    unzipFile(downloadedFile, mPostBundleFile);
-                    injectAndroidIntoIndexHtmlScript(findIndexHtmlFile());
-                }
+        final File file = File.createTempFile(fileName, null, mApplicationContext.getCacheDir());
+        DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
+        downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
+            @Override
+            public void onDownloadCompleted(File downloadedFile) {
+                File postBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
+                videoAd.setPostBundleFile(postBundleFile);
+                unzipFile(downloadedFile, postBundleFile);
+                injectAndroidInterfaceIntoIndexHtmlScript(findIndexHtmlFile(postBundleFile));
+            }
 
-                @Override
-                public void onDownloadFailed() {
-                    Log.i(TAG, "onDownloadFailed: ");
-                }
-            });
-            downloadTask.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onDownloadFailed() {
+                videoAd.getOnAdListener().onAdFailedToLoad();
+            }
+        });
+        downloadTask.execute();
     }
 
-    private void injectAndroidIntoIndexHtmlScript(File indexHtmlFile) {
+    private void injectAndroidInterfaceIntoIndexHtmlScript(File indexHtmlFile) {
         IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
         indexHtmlChanger.change(indexHtmlFile);
     }
@@ -151,19 +163,22 @@ public class Sdk {
         unzipManager.unzip();
     }
 
-    public void playAd(final Activity activity) {
-//        showPostAdCompanion();
+    public void playAd(final Activity activity, String placementId) {
+        final VideoAd videoAd = mAdMap.get(placementId);
+        final OnAdListener onAdListener = videoAd.getOnAdListener();
+
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         mVASTPlayer = new VASTPlayer(activity, new VASTPlayer.VASTPlayerListener() {
             @Override
             public void vastReady() {
                 mVASTPlayer.play();
-                mOnAdListener.onAdStarted();
+                onAdListener.onAdStarted();
             }
 
             @Override
             public void vastError(int error) {
-                mOnAdListener.onAdFailedToLoad();
+                onAdListener.onAdFailedToLoad();
             }
 
             @Override
@@ -173,8 +188,8 @@ public class Sdk {
 
             @Override
             public void vastComplete() {
-                mOnAdListener.onAdCompleted();
-                showPostAdCompanion(activity);
+                onAdListener.onAdCompleted();
+                showPostRoll(activity, videoAd);
             }
 
             @Override
@@ -182,44 +197,46 @@ public class Sdk {
 
             }
         });
-        mVASTPlayer.loadVideoWithData(mVastXml);
+        String vastXmlString = videoAd.getVastXml();
+        mVASTPlayer.loadVideoWithData(vastXmlString);
     }
 
-    private File findIndexHtmlFile() {
-        File[] indexHtmls = mPostBundleFile.listFiles(new FilenameFilter() {
+    private File findIndexHtmlFile(File postBundleFile) {
+        File[] indexHtmls = postBundleFile.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
                 return s.equals("index.html");
             }
         });
+        // TODO: 15.08.17 what if no file here?
         return indexHtmls[0];
     }
 
-    private void showPostAdCompanion(Activity activity) {
-        File indexHtml = findIndexHtmlFile();
-        showWebViewDialog(activity, indexHtml);
+    private void showPostRoll(Activity activity, VideoAd videoAd) {
+        File postBundleFile = videoAd.getPostBundleFile();
+        File indexHtml = findIndexHtmlFile(postBundleFile);
+        showWebViewDialog(activity, videoAd, indexHtml);
     }
 
-    private void showWebViewDialog(final Activity activity, File indexHtml) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    private void showWebViewDialog(final Activity activity, final VideoAd videoAd, File indexHtml) {
         final WebViewDialog webViewDialog = new WebViewDialog(activity, android.R.style.Theme_NoTitleBar_Fullscreen);
         webViewDialog.setIndexHtmlFile(indexHtml);
         webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
             @Override
             public void onCloseClicked() {
                 webViewDialog.dismiss();
-                mOnAdListener.onAdClosed();
+                videoAd.getOnAdListener().onAdClosed();
             }
 
             @Override
             public void onReplayClicked() {
                 webViewDialog.dismiss();
-                playAd(activity);
+                playAd(activity, videoAd.getPlacementId());
             }
 
             @Override
             public void onDownloadClicked() {
-                openBrowseIntent(mPreloadResponse.ads.get(0).adMarkup.callToActionUrl);
+                openBrowseIntent(videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl);
             }
         });
         webViewDialog.show();
