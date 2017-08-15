@@ -2,7 +2,6 @@ package yterletskyi.com.vunglesdk.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -242,6 +241,7 @@ public class Sdk {
         webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
             @Override
             public void onCloseClicked() {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 webViewDialog.dismiss();
                 videoAd.getOnAdListener().onAdClosed();
             }
@@ -258,12 +258,6 @@ public class Sdk {
             }
         });
         webViewDialog.show();
-        webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            }
-        });
     }
 
     private void openBrowseIntent(String url) {
