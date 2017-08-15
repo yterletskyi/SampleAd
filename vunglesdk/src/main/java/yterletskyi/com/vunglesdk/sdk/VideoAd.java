@@ -55,4 +55,8 @@ class VideoAd {
     public String getPlacementId() {
         return mPlacementId;
     }
+
+    public boolean isLoaded() {
+        return mVastXml != null;
+    }
 }

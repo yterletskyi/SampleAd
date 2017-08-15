@@ -59,6 +59,10 @@ public class Sdk {
         return INSTANCE;
     }
 
+    public boolean isInitialized() {
+        return mInitResponse != null;
+    }
+
     private void createApiInterface() {
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(API_ENDPOINT)
@@ -67,7 +71,7 @@ public class Sdk {
         mApiService = mRetrofit.create(IApiService.class);
     }
 
-    public void initSdk(String appId, List<String> placementList, final OnInitListener listener) {
+    public void initialize(String appId, List<String> placementList, final OnInitListener listener) {
         mAppId = appId;
 
         RequestBuilder requestBuilder = new RequestBuilder();
@@ -77,8 +81,13 @@ public class Sdk {
         call.enqueue(new Callback<InitResponse>() {
             @Override
             public void onResponse(@NonNull Call<InitResponse> call, @NonNull retrofit2.Response<InitResponse> response) {
-                mInitResponse = response.body();
-                listener.onInitSucceeded();
+                InitResponse initResponse = response.body();
+                if (initResponse != null) {
+                    mInitResponse = initResponse;
+                    listener.onInitSucceeded();
+                } else {
+                    listener.onInitFailed();
+                }
             }
 
             @Override
@@ -98,6 +107,9 @@ public class Sdk {
     }
 
     public void preloadAd(String placementId, OnAdListener onAdListener) {
+        if (!isInitialized()) {
+            return;
+        }
         final VideoAd videoAd = new VideoAd(placementId);
         videoAd.setOnAdListener(onAdListener);
         mAdMap.put(placementId, videoAd);
@@ -164,7 +176,13 @@ public class Sdk {
     }
 
     public void playAd(final Activity activity, String placementId) {
+        if (!isInitialized()) {
+            return;
+        }
         final VideoAd videoAd = mAdMap.get(placementId);
+        if (videoAd == null || !videoAd.isLoaded()) {
+            return;
+        }
         final OnAdListener onAdListener = videoAd.getOnAdListener();
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

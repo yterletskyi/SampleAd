@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSdk() {
-        mSdk.initSdk(APP_ID, PLACEMENTS, new OnInitListener() {
+        mSdk.initialize(APP_ID, PLACEMENTS, new OnInitListener() {
 
             @Override
             public void onInitSucceeded() {
