@@ -541,9 +541,9 @@ public class VASTActivity extends Activity implements OnCompletionListener,
 
     @Override
     public void onBackPressed() {
-        VASTLog.d(TAG, "entered onBackPressed");
-        this.closeClicked();
-
+        // TODO: 15.08.17 I changed this
+//        VASTLog.d(TAG, "entered onBackPressed");
+//        this.closeClicked();
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
