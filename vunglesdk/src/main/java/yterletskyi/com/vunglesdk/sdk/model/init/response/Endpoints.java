@@ -1,4 +1,3 @@
-
 package yterletskyi.com.vunglesdk.sdk.model.init.response;
 
 import com.google.gson.annotations.Expose;
@@ -11,7 +10,7 @@ public class Endpoints {
     public String _new;
     @SerializedName("ads")
     @Expose
-    public String ads;
+    public String ads = "";
     @SerializedName("will_play_ad")
     @Expose
     public String willPlayAd;

@@ -115,7 +115,7 @@ public class Sdk {
 
         GlobalRequest preloadRequest = buildPreloadRequestForAd(videoAd);
 
-        Call<PreloadResponse> responseCall = mApiService.preloadAd(preloadRequest);
+        Call<PreloadResponse> responseCall = mApiService.preloadAd(mInitResponse.endpoints.ads, preloadRequest);
         responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
