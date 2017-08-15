@@ -13,7 +13,6 @@ import org.nexage.sourcekit.vast.VASTPlayer;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +90,11 @@ public class Sdk {
 
     private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
         RequestBuilder requestBuilder = new RequestBuilder();
-        return requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
+        GlobalRequest globalRequest = new GlobalRequest();
+        if (mInitResponse != null) {
+            globalRequest = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
+        }
+        return globalRequest;
     }
 
     public void preloadAd(String placementId, OnAdListener onAdListener) {
@@ -105,13 +108,16 @@ public class Sdk {
         responseCall.enqueue(new Callback<PreloadResponse>() {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
-                // TODO: 15.08.17 take a look here
-                PreloadResponse body = response.body();
-                videoAd.setPreloadResponse(body);
-                downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
-                String vast = formVastXml(body);
-                videoAd.setVastXml(vast);
-                videoAd.getOnAdListener().onAdLoaded();
+                try {
+                    PreloadResponse body = response.body();
+                    videoAd.setPreloadResponse(body);
+                    downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
+                    String vast = formVastXml(body);
+                    videoAd.setVastXml(vast);
+                    videoAd.getOnAdListener().onAdLoaded();
+                } catch (Exception e) {
+                    videoAd.getOnAdListener().onAdFailedToLoad();
+                }
             }
 
             @Override
@@ -126,32 +132,25 @@ public class Sdk {
         return vastCreator.build(result);
     }
 
-    private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) {
+    private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) throws Exception {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
-        final File file;
-        try {
-            file = File.createTempFile(fileName, null, mApplicationContext.getCacheDir());
-            DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
-            downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
-                @Override
-                public void onDownloadCompleted(File downloadedFile) {
-                    File postBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
-                    videoAd.setPostBundleFile(postBundleFile);
-                    unzipFile(downloadedFile, postBundleFile);
-                    injectAndroidInterfaceIntoIndexHtmlScript(findIndexHtmlFile(postBundleFile));
-                }
+        final File file = File.createTempFile(fileName, null, mApplicationContext.getCacheDir());
+        DownloadTask downloadTask = new DownloadTask(postBundleUrl, file);
+        downloadTask.setOnDownloadListener(new DownloadTask.OnDownloadListener() {
+            @Override
+            public void onDownloadCompleted(File downloadedFile) {
+                File postBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
+                videoAd.setPostBundleFile(postBundleFile);
+                unzipFile(downloadedFile, postBundleFile);
+                injectAndroidInterfaceIntoIndexHtmlScript(findIndexHtmlFile(postBundleFile));
+            }
 
-                @Override
-                public void onDownloadFailed() {
-                    videoAd.getOnAdListener().onAdFailedToLoad();
-                    Log.i(TAG, "onDownloadFailed: ");
-                }
-            });
-            downloadTask.execute();
-        } catch (IOException e) {
-            videoAd.getOnAdListener().onAdFailedToLoad();
-            e.printStackTrace();
-        }
+            @Override
+            public void onDownloadFailed() {
+                videoAd.getOnAdListener().onAdFailedToLoad();
+            }
+        });
+        downloadTask.execute();
     }
 
     private void injectAndroidInterfaceIntoIndexHtmlScript(File indexHtmlFile) {

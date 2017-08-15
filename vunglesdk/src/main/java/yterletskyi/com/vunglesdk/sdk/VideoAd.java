@@ -8,8 +8,7 @@ import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
  * Created by yterletskyi on 15.08.17.
  */
 
-// TODO: 15.08.17 make it inaccessible from out of package
-public class VideoAd {
+class VideoAd {
 
     private final String mPlacementId;
     private String mVastXml;
@@ -56,7 +55,4 @@ public class VideoAd {
     public String getPlacementId() {
         return mPlacementId;
     }
-
 }
-
-

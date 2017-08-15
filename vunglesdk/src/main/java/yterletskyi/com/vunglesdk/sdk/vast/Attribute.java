@@ -14,8 +14,6 @@ public class Attribute<T> {
         mValue = value;
     }
 
-    // TODO: 05.08.17 maybe better return Map.Entry from this
-
     public String getName() {
         return mName;
     }
