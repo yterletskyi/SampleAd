@@ -227,8 +227,9 @@ public class VASTActivity extends Activity implements OnCompletionListener,
         int size = Math.min(mScreenWidth, mScreenHeight);
         size = (int) (SKIP_INFO_SCALE * size);
 
-        this.createPlayPauseButton(size);
-        this.createCloseButton(size);
+        // TODO: 15.08.17 I commented this
+//        this.createPlayPauseButton(size);
+//        this.createCloseButton(size);
 
         this.createInfoButton(size);
 
