@@ -11,6 +11,12 @@
         android:layout_height="wrap_content"
         android:text="Init SDK"/>
 
+    <Button
+        android:id="@+id/btn_new_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="new screen"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
