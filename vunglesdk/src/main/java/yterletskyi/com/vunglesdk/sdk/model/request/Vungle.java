@@ -1,15 +1,12 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Vungle {
 
     @SerializedName("android")
-    @Expose
     public Android android;
     @SerializedName("platform")
-    @Expose
     public String platform;
 
     public Vungle withAndroid(Android android) {

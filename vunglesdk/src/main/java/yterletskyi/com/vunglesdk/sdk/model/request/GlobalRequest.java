@@ -6,13 +6,10 @@ import com.google.gson.annotations.SerializedName;
 public class GlobalRequest {
 
     @SerializedName("app")
-    @Expose
     public App app;
     @SerializedName("device")
-    @Expose
     public Device device;
     @SerializedName("request")
-    @Expose
     public Request request;
 
     public GlobalRequest withApp(App app) {

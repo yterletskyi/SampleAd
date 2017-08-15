@@ -1,6 +1,5 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 public class Request {
 
     @SerializedName("placements")
-    @Expose
     public List<String> placements = null;
 
     public Request withPlacements(List<String> placements) {

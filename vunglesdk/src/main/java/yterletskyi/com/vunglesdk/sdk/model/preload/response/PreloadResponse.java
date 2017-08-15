@@ -1,5 +1,7 @@
 package yterletskyi.com.vunglesdk.sdk.model.preload.response;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
 
 public class PreloadResponse {
 
+    @SerializedName("ads")
     public List<Ad> ads;
 
 }

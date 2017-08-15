@@ -1,60 +1,42 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Android {
 
     @SerializedName("volume_level")
-    @Expose
     public double volumeLevel;
     @SerializedName("battery_level")
-    @Expose
     public double batteryLevel;
     @SerializedName("battery_saver_enabled")
-    @Expose
     public int batterySaverEnabled;
     @SerializedName("battery_state")
-    @Expose
     public String batteryState;
     @SerializedName("storage_bytes_available")
-    @Expose
     public long storageBytesAvailable;
     @SerializedName("connection_type")
-    @Expose
     public String connectionType;
     @SerializedName("connection_type_detail")
-    @Expose
     public String connectionTypeDetail;
     @SerializedName("network_metered")
-    @Expose
     public int networkMetered;
     @SerializedName("data_saver_status")
-    @Expose
     public String dataSaverStatus;
     @SerializedName("sd_card_available")
-    @Expose
     public int sdCardAvailable;
     @SerializedName("sound_enabled")
-    @Expose
     public int soundEnabled;
     @SerializedName("language")
-    @Expose
     public String language;
     @SerializedName("locale")
-    @Expose
     public String locale;
     @SerializedName("android_id")
-    @Expose
     public String androidId;
     @SerializedName("vduid")
-    @Expose
     public String vduid;
     @SerializedName("os_name")
-    @Expose
     public String osName;
     @SerializedName("time_zone")
-    @Expose
     public String timeZone;
 
     public Android withVolumeLevel(double volumeLevel) {
