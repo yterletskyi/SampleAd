@@ -29,12 +29,11 @@ public class VastCreator {
 
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
 
-
         Tag vast = new Tag(VastContract.VAST)
                 .withAttributes(
                         new Attribute<>("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"),
                         new Attribute<>("xsi:noNamespaceSchemaLocation", "vast.xsd"),
-                        new Attribute<>("version", "3.0")
+                        new Attribute<>("version", "2.0")
                 )
                 .withChildren(
                         new Tag(VastContract.AD)
