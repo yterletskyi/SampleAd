@@ -167,6 +167,8 @@ public class Sdk {
         final VideoAd videoAd = mAdMap.get(placementId);
         final OnAdListener onAdListener = videoAd.getOnAdListener();
 
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         mVASTPlayer = new VASTPlayer(activity, new VASTPlayer.VASTPlayerListener() {
             @Override
             public void vastReady() {
@@ -217,7 +219,6 @@ public class Sdk {
     }
 
     private void showWebViewDialog(final Activity activity, final VideoAd videoAd, File indexHtml) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         final WebViewDialog webViewDialog = new WebViewDialog(activity, android.R.style.Theme_NoTitleBar_Fullscreen);
         webViewDialog.setIndexHtmlFile(indexHtml);
         webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
