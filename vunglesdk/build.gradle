@@ -23,7 +23,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(path: ':nexage')
+    compile project(path: ':vunglesdk:nexage')
 
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
