@@ -30,18 +30,25 @@ public class NewActivity extends Activity {
             }
         });
 
-        findViewById(R.id.btn_play).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_play_one).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playAd();
+                playAd("TESTREW28799");
+            }
+        });
+
+        findViewById(R.id.btn_play_two).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playAd("TESTINT07107");
             }
         });
 
     }
 
-    private void playAd() {
+    private void playAd(String placementId) {
         Context applicationContext = getApplicationContext();
         Sdk sdk = Sdk.getInstance(applicationContext);
-        sdk.playAd(this, "TESTREW28799");
+        sdk.playAd(this, placementId);
     }
 }

@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAdLoaded() {
                         Log.i(TAG, "onAdLoaded: ");
-                        enableButton(R.id.btn_play_one);
+                        setFullAlpha(R.id.btn_play_one);
                     }
 
                     @Override
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAdLoaded() {
                         Log.i(TAG, "onAdLoaded: ");
-                        enableButton(R.id.btn_play_two);
+                        setFullAlpha(R.id.btn_play_two);
                     }
 
                     @Override
@@ -135,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onInitSucceeded() {
-                enableButton(R.id.btn_preload_one);
-                enableButton(R.id.btn_preload_two);
+                setFullAlpha(R.id.btn_preload_one);
+                setFullAlpha(R.id.btn_preload_two);
             }
 
             @Override
@@ -147,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void enableButton(@IdRes int btnId) {
-        findViewById(btnId).setEnabled(true);
+    private void setFullAlpha(@IdRes int btnId) {
+        findViewById(btnId).setAlpha(1f);
     }
 
 }
