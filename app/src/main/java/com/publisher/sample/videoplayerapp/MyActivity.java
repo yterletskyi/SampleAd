@@ -47,7 +47,7 @@ public class MyActivity extends AppCompatActivity {
         findViewById(R.id.btn_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playAd();
+                playAd("TESTREW28799");
             }
         });
 
@@ -101,8 +101,8 @@ public class MyActivity extends AppCompatActivity {
         });
     }
 
-    private void playAd() {
-        mSdk.playAd(this);
+    private void playAd(String placementId) {
+        mSdk.playAd(this, placementId);
     }
 
     private void enableButton(@IdRes int btnId) {
