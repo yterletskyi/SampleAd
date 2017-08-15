@@ -11,20 +11,71 @@
         android:layout_height="wrap_content"
         android:text="Init SDK"/>
 
-    <Button
-        android:id="@+id/btn_preload"
-        style="@style/MyButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Preload ad"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_play"
-        style="@style/MyButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="Play ad"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TESTREW28799"/>
+
+            <Button
+                android:id="@+id/btn_preload_one"
+                style="@style/MyButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="Preload ad"/>
+
+            <Button
+                android:id="@+id/btn_play_one"
+                style="@style/MyButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="Play ad"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TESTINT07107"/>
+
+            <Button
+                android:id="@+id/btn_preload_two"
+                style="@style/MyButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="Preload ad"/>
+
+            <Button
+                android:id="@+id/btn_play_two"
+                style="@style/MyButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="Play ad"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

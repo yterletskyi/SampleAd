@@ -97,8 +97,9 @@ public class Sdk {
     public void preloadAd(String placementId, OnAdListener onAdListener) {
         final VideoAd videoAd = new VideoAd(placementId);
         videoAd.setOnAdListener(onAdListener);
-        GlobalRequest preloadRequest = buildPreloadRequestForAd(videoAd);
+        mAdMap.put(placementId, videoAd);
 
+        GlobalRequest preloadRequest = buildPreloadRequestForAd(videoAd);
 
         Call<PreloadResponse> responseCall = mApiService.preloadAd(preloadRequest);
         responseCall.enqueue(new Callback<PreloadResponse>() {
@@ -107,7 +108,7 @@ public class Sdk {
                 // TODO: 15.08.17 take a look here
                 PreloadResponse body = response.body();
                 videoAd.setPreloadResponse(body);
-                downloadPostBundle(body.ads.get(0).adMarkup.postBundle);
+                downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
                 String vast = formVastXml(body);
                 videoAd.setVastXml(vast);
                 videoAd.getOnAdListener().onAdLoaded();
@@ -125,7 +126,7 @@ public class Sdk {
         return vastCreator.build(result);
     }
 
-    private void downloadPostBundle(String postBundleUrl) {
+    private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) {
         final String fileName = Uri.parse(postBundleUrl).getLastPathSegment();
         final File file;
         try {
@@ -135,20 +136,20 @@ public class Sdk {
                 @Override
                 public void onDownloadCompleted(File downloadedFile) {
                     File postBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
-                    // TODO: 15.08.17 set ad postbundleifle
+                    videoAd.setPostBundleFile(postBundleFile);
                     unzipFile(downloadedFile, postBundleFile);
                     injectAndroidInterfaceIntoIndexHtmlScript(findIndexHtmlFile(postBundleFile));
                 }
 
                 @Override
                 public void onDownloadFailed() {
-                    // TODO: 15.08.17 hit adFailedToLoad
+                    videoAd.getOnAdListener().onAdFailedToLoad();
                     Log.i(TAG, "onDownloadFailed: ");
                 }
             });
             downloadTask.execute();
         } catch (IOException e) {
-            // TODO: 15.08.17 hit adFailedToLoad
+            videoAd.getOnAdListener().onAdFailedToLoad();
             e.printStackTrace();
         }
     }
