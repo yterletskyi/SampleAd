@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

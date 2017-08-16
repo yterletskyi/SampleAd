@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk.utils;
+package yterletskyi.com.vunglesdk.sdk.utils.hardware;
 
 import android.content.Context;
 import android.media.AudioManager;

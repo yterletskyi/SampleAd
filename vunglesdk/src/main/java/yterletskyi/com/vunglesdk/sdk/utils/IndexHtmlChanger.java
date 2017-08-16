@@ -1,6 +1,9 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 import java.io.File;
+
+import yterletskyi.com.vunglesdk.sdk.PostVideoJavascriptInterface;
+import yterletskyi.com.vunglesdk.sdk.utils.TextFileChanger;
 
 /**
  * Created by yterletskyi on 14.08.17.

@@ -12,7 +12,7 @@ class VideoAd {
 
     private final String mPlacementId;
     private String mVastXml;
-    private File mPostBundleFile;
+    private File mPostrollBundleFile;
     private OnAdListener mOnAdListener;
     private PreloadResponse mPreloadResponse;
 
@@ -28,12 +28,12 @@ class VideoAd {
         mVastXml = vastXml;
     }
 
-    public File getPostBundleFile() {
-        return mPostBundleFile;
+    public File getPostrollBundleFile() {
+        return mPostrollBundleFile;
     }
 
-    public void setPostBundleFile(File postBundleFile) {
-        mPostBundleFile = postBundleFile;
+    public void setPostrollBundleFile(File postrollBundleFile) {
+        mPostrollBundleFile = postrollBundleFile;
     }
 
     public PreloadResponse getPreloadResponse() {

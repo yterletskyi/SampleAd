@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 import org.apache.commons.io.FileUtils;
 

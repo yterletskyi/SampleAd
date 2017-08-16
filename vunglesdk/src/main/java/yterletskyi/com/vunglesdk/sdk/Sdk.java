@@ -25,6 +25,9 @@ import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
+import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
+import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
+import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
 
 /**
  * Created by yterletskyi on 26.07.17.
@@ -38,12 +41,11 @@ public class Sdk {
     private static final String API_ENDPOINT = "https://api.vungle.com";
     private static Sdk INSTANCE;
     private String mAppId;
-    private Context mApplicationContext;
-    private IApiService mApiService;
     private VASTPlayer mVASTPlayer;
-    private Map<String, VideoAd> mAdMap;
-
+    private IApiService mApiService;
     private InitResponse mInitResponse;
+    private Context mApplicationContext;
+    private Map<String, VideoAd> mAdMap;
 
     private Sdk(Context applicationContext) {
         mApplicationContext = applicationContext;
@@ -151,9 +153,10 @@ public class Sdk {
             @Override
             public void onDownloadCompleted(File downloadedFile) {
                 File postBundleFile = new File(file.getParentFile().toString() + "/" + fileName.substring(0, fileName.indexOf('-')));
-                videoAd.setPostBundleFile(postBundleFile);
+                videoAd.setPostrollBundleFile(postBundleFile);
                 unzipFile(downloadedFile, postBundleFile);
-                injectAndroidInterfaceIntoIndexHtmlScript(findIndexHtmlFile(postBundleFile));
+                File htmlFile = findIndexHtmlFile(postBundleFile);
+                injectAndroidInterfaceIntoIndexHtmlScript(htmlFile);
             }
 
             @Override
@@ -165,8 +168,10 @@ public class Sdk {
     }
 
     private void injectAndroidInterfaceIntoIndexHtmlScript(File indexHtmlFile) {
-        IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
-        indexHtmlChanger.change(indexHtmlFile);
+        if (indexHtmlFile != null) {
+            IndexHtmlChanger indexHtmlChanger = new IndexHtmlChanger();
+            indexHtmlChanger.change(indexHtmlFile);
+        }
     }
 
     private void unzipFile(File file, File destination) {
@@ -225,20 +230,27 @@ public class Sdk {
                 return s.equals("index.html");
             }
         });
-        // TODO: 15.08.17 what if no file here?
-        return indexHtmls[0];
+        File file;
+        if (indexHtmls.length > 0) {
+            file = indexHtmls[0];
+        } else {
+            file = null;
+        }
+        return file;
     }
 
     private void showPostRoll(Activity activity, VideoAd videoAd) {
-        File postBundleFile = videoAd.getPostBundleFile();
+        File postBundleFile = videoAd.getPostrollBundleFile();
         File indexHtml = findIndexHtmlFile(postBundleFile);
-        showWebViewDialog(activity, videoAd, indexHtml);
+        if (!activity.isFinishing() && indexHtml != null) {
+            showWebViewDialog(activity, videoAd, indexHtml);
+        }
     }
 
     private void showWebViewDialog(final Activity activity, final VideoAd videoAd, File indexHtml) {
         final WebViewDialog webViewDialog = new WebViewDialog(activity, android.R.style.Theme_NoTitleBar_Fullscreen);
         webViewDialog.setIndexHtmlFile(indexHtml);
-        webViewDialog.setOnPostVideoCompanionListener(new OnPostVideoCompanionListener() {
+        webViewDialog.setOnPostrollListener(new OnPostrollListener() {
             @Override
             public void onCloseClicked() {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

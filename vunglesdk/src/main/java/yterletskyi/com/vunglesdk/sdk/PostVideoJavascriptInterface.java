@@ -13,7 +13,7 @@ public class PostVideoJavascriptInterface {
     private static final String ACTION_REPLAY = "replay";
     private static final String ACTION_DOWNLOAD = "download";
 
-    private OnPostVideoCompanionListener mOnPostVideoCompanionListener;
+    private OnPostrollListener mOnPostrollListener;
 
     @JavascriptInterface
     public void actionClicked(String s) {
@@ -31,18 +31,18 @@ public class PostVideoJavascriptInterface {
     }
 
     private void download() {
-        mOnPostVideoCompanionListener.onDownloadClicked();
+        mOnPostrollListener.onDownloadClicked();
     }
 
     private void replay() {
-        mOnPostVideoCompanionListener.onReplayClicked();
+        mOnPostrollListener.onReplayClicked();
     }
 
     private void close() {
-        mOnPostVideoCompanionListener.onCloseClicked();
+        mOnPostrollListener.onCloseClicked();
     }
 
-    public void setOnPostVideoCompanionListener(OnPostVideoCompanionListener onPostVideoCompanionListener) {
-        mOnPostVideoCompanionListener = onPostVideoCompanionListener;
+    public void setOnPostrollListener(OnPostrollListener onPostrollListener) {
+        mOnPostrollListener = onPostrollListener;
     }
 }

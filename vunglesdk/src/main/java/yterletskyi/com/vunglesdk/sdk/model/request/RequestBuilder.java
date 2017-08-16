@@ -12,10 +12,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
-import yterletskyi.com.vunglesdk.sdk.utils.BatteryManager;
-import yterletskyi.com.vunglesdk.sdk.utils.Connectivity;
-import yterletskyi.com.vunglesdk.sdk.utils.DiskSpaceManager;
-import yterletskyi.com.vunglesdk.sdk.utils.MyAudioManager;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.DiskSpaceManager;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.MyAudioManager;
 
 import static yterletskyi.com.vunglesdk.sdk.Sdk.APP_VERSION;
 

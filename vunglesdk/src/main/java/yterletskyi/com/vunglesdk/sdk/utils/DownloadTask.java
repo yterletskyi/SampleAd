@@ -1,7 +1,6 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -53,7 +52,6 @@ public class DownloadTask extends AsyncTask<Void, Void, File> {
             dos.write(buffer);
             dos.flush();
             dos.close();
-            Log.i("VungleSdk", "downloadFile: finished");
             return outputFile;
         } catch (Exception e) {
             return null;
@@ -69,7 +67,7 @@ public class DownloadTask extends AsyncTask<Void, Void, File> {
         }
     }
 
-    interface OnDownloadListener {
+    public interface OnDownloadListener {
         void onDownloadCompleted(File file);
 
         void onDownloadFailed();
