@@ -28,13 +28,12 @@ public interface IApiService {
     @Headers("Content-Type: application/json")
     Call<PreloadResponse> preloadAd(@Url String url, @Body GlobalRequest request);
 
-    // TODO: 16.08.17 rename this
     @GET
-    Call<Void> fireEvent(@Url String url);
+    Call<Void> sendGetRequest(@Url String url);
 
     @POST // will_play_ad endpoint
     @Headers("Content-Type: application/json")
-    Call<WillPlayAdResponse> playingAd(@Url String url, @Body GlobalRequest request);
+    Call<WillPlayAdResponse> willPlayAd(@Url String url, @Body GlobalRequest request);
 
     @POST // report_ad endpoint
     @Headers("Content-Type: application/json")

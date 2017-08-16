@@ -230,7 +230,7 @@ public class Sdk {
         Ad ad = videoAd.getPreloadResponse().ads.get(0);
         Placement placement = getPlacementForAd(videoAd.getPlacementId());
         GlobalRequest request = new RequestBuilder().buildPlayingAdRequest(mApplicationContext, mAppId, ad.adMarkup.adToken, placement);
-        Call<WillPlayAdResponse> call = mApiService.playingAd(url, request);
+        Call<WillPlayAdResponse> call = mApiService.willPlayAd(url, request);
         call.enqueue(new Callback<WillPlayAdResponse>() {
             @Override
             public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
@@ -343,7 +343,7 @@ public class Sdk {
     }
 
     private void fireUrl(String url) {
-        Call<Void> call = mApiService.fireEvent(url);
+        Call<Void> call = mApiService.sendGetRequest(url);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
