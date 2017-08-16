@@ -18,6 +18,7 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
@@ -266,9 +267,38 @@ public class Sdk {
             @Override
             public void onDownloadClicked() {
                 openBrowseIntent(videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl);
+                firePostrollClickEvents(videoAd);
             }
         });
         webViewDialog.show();
+        firePostrollViewEvents(videoAd);
+    }
+
+    private void firePostrollViewEvents(VideoAd videoAd) {
+        List<String> postrollViewUrls = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollView;
+        for (String url : postrollViewUrls) {
+            fireUrl(url);
+        }
+    }
+
+    private void firePostrollClickEvents(VideoAd videoAd) {
+        List<String> postrollClickEvents = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollClick;
+        for (String url : postrollClickEvents) {
+            fireUrl(url);
+        }
+    }
+
+    private void fireUrl(String url) {
+        Call<Void> call = mApiService.fireEvent(url);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
     }
 
     private void openBrowseIntent(String url) {
