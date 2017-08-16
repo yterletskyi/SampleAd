@@ -1,17 +1,19 @@
 package yterletskyi.com.vunglesdk.sdk;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PlayPercentage;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.MimeDetector;
 import yterletskyi.com.vunglesdk.sdk.vast.Attribute;
+import yterletskyi.com.vunglesdk.sdk.vast.IChild;
 import yterletskyi.com.vunglesdk.sdk.vast.Tag;
 import yterletskyi.com.vunglesdk.sdk.vast.Value;
 import yterletskyi.com.vunglesdk.sdk.vast.VastBuilder;
 import yterletskyi.com.vunglesdk.sdk.vast.VastContract;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by yterletskyi on 26.07.17.
@@ -25,7 +27,7 @@ public class VastCreator {
     public String build(PreloadResponse result) {
         Ad ad = result.ads.get(0);
 
-        Map<Double, String> quartiles = composeQuartilesMap(ad);
+        Map<Double, List<String>> quartiles = composeQuartilesMap(ad);
 
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
 
@@ -59,19 +61,19 @@ public class VastCreator {
                                                                                                                 .withChildren(
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "start"))
-                                                                                                                                .withChildren(new Value(quartiles.get(0.0))),
+                                                                                                                                .withChildren((IChild[]) composeValuesForQuartile(quartiles, 0.0)),
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "firstQuartile"))
-                                                                                                                                .withChildren(new Value(quartiles.get(0.25))),
+                                                                                                                                .withChildren((IChild[]) composeValuesForQuartile(quartiles, 0.25)),
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "midpoint"))
-                                                                                                                                .withChildren(new Value(quartiles.get(0.5))),
+                                                                                                                                .withChildren((IChild[]) composeValuesForQuartile(quartiles, 0.5)),
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "thirdQuartile"))
-                                                                                                                                .withChildren(new Value(quartiles.get(0.75))),
+                                                                                                                                .withChildren((IChild[]) composeValuesForQuartile(quartiles, 0.75)),
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "complete"))
-                                                                                                                                .withChildren(new Value(quartiles.get(1.0))),
+                                                                                                                                .withChildren((IChild[]) composeValuesForQuartile(quartiles, 1.0)),
                                                                                                                         new Tag(VastContract.TRACKING)
                                                                                                                                 .withAttributes(new Attribute<>("event", "mute"))
                                                                                                                                 .withChildren(new Value(ad.adMarkup.tpat.mute.get(0))),
@@ -106,13 +108,24 @@ public class VastCreator {
         return new VastBuilder().buildFromTag(vast);
     }
 
-    private Map<Double, String> composeQuartilesMap(Ad ad) {
-        Map<Double, String> quartiles = new HashMap<>();
+    private Map<Double, List<String>> composeQuartilesMap(Ad ad) {
+        Map<Double, List<String>> quartiles = new HashMap<>();
         for (PlayPercentage playPercentage : ad.adMarkup.tpat.playPercentage) {
-            int urlIndex = 0;
-            quartiles.put(playPercentage.checkpoint, playPercentage.urls.get(urlIndex));
+            quartiles.put(playPercentage.checkpoint, playPercentage.urls);
         }
         return quartiles;
+    }
+
+    private Value[] composeValuesForQuartile(Map<Double, List<String>> quartiles, double quartile) {
+        List<String> urls = quartiles.get(quartile);
+        int length = urls.size();
+        Value[] urlArray = new Value[length];
+        for (int i = 0; i < urls.size(); i++) {
+            String url = urls.get(i);
+            Value value = new Value(url);
+            urlArray[i] = value;
+        }
+        return urlArray;
     }
 
 }

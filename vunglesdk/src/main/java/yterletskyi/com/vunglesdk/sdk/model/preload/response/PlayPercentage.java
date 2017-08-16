@@ -9,6 +9,6 @@ public class PlayPercentage {
     @SerializedName("checkpoint")
     public double checkpoint;
     @SerializedName("urls")
-    public List<String> urls = null;
+    public List<String> urls;
 
 }
