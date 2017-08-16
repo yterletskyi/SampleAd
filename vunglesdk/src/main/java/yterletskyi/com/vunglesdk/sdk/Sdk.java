@@ -101,11 +101,7 @@ public class Sdk {
 
     private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest globalRequest = new GlobalRequest();
-        if (mInitResponse != null) {
-            globalRequest = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
-        }
-        return globalRequest;
+        return requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
     }
 
     public void preloadAd(String placementId, OnAdListener onAdListener) {
