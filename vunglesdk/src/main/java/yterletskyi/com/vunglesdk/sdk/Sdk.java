@@ -44,7 +44,6 @@ public class Sdk {
     private static final String API_ENDPOINT = "https://api.vungle.com";
     private static Sdk INSTANCE;
     private String mAppId;
-    private VASTPlayer mVASTPlayer;
     private IApiService mApiService;
     private InitResponse mInitResponse;
     private Context mApplicationContext;
@@ -194,37 +193,39 @@ public class Sdk {
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        mVASTPlayer = new VASTPlayer(activity, new VASTPlayer.VASTPlayerListener() {
-            @Override
-            public void vastReady() {
-                mVASTPlayer.play();
-                sendWillPlayAdRequest(videoAd);
-                onAdListener.onAdStarted();
-            }
+        final VASTPlayer vastPlayer = new VASTPlayer(activity);
+        vastPlayer.setVASTPlayerListener(
+                new VASTPlayer.VASTPlayerListener() {
+                    @Override
+                    public void vastReady() {
+                        vastPlayer.play();
+                        sendWillPlayAdRequest(videoAd);
+                        onAdListener.onAdStarted();
+                    }
 
-            @Override
-            public void vastError(int error) {
-                onAdListener.onAdFailedToLoad();
-            }
+                    @Override
+                    public void vastError(int error) {
+                        onAdListener.onAdFailedToLoad();
+                    }
 
-            @Override
-            public void vastClick() {
-                Log.i(TAG, "vastClick: ");
-            }
+                    @Override
+                    public void vastClick() {
+                        Log.i(TAG, "vastClick: ");
+                    }
 
-            @Override
-            public void vastComplete() {
-                onAdListener.onAdCompleted();
-                showPostRoll(activity, videoAd);
-            }
+                    @Override
+                    public void vastComplete() {
+                        onAdListener.onAdCompleted();
+                        showPostRoll(activity, videoAd);
+                    }
 
-            @Override
-            public void vastDismiss() {
+                    @Override
+                    public void vastDismiss() {
 
-            }
-        });
+                    }
+                });
         String vastXmlString = videoAd.getVastXml();
-        mVASTPlayer.loadVideoWithData(vastXmlString);
+        vastPlayer.loadVideoWithData(vastXmlString);
     }
 
     private void sendWillPlayAdRequest(VideoAd videoAd) {

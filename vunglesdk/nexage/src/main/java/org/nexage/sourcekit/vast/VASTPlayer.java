@@ -41,8 +41,11 @@ public class VASTPlayer {
     private Context context;
     private VASTModel vastModel;
 
-    public VASTPlayer(Context context, VASTPlayerListener listener) {
+    public VASTPlayer(Context context) {
         this.context = context;
+    }
+
+    public void setVASTPlayerListener(VASTPlayerListener listener) {
         VASTPlayer.listener = listener;
     }
 
