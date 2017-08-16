@@ -1,6 +1,8 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -16,8 +18,6 @@ import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.DiskSpaceManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.MyAudioManager;
-
-import static yterletskyi.com.vunglesdk.sdk.Sdk.APP_VERSION;
 
 /**
  * Created by yterletskyi on 26.07.17.
@@ -45,7 +45,7 @@ public class RequestBuilder {
                                     // TODO: 26.07.17 change it back
 //                                .withBundle(context.getPackageName())
                                     .withBundle("com.publisher.sample")
-                                    .withVer(APP_VERSION)
+                                    .withVer(getVersionName(context))
                     )
                     .withRequest(
                             new Request()
@@ -99,6 +99,18 @@ public class RequestBuilder {
 
     private String getAndroidId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    private String getVersionName(Context context) {
+        String version;
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            version = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            version = "1.0";
+        }
+        return version;
     }
 
 }

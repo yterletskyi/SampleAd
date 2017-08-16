@@ -35,8 +35,7 @@ import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
 
 public class Sdk {
 
-    public static final String APP_VERSION = "1.0";
-    private static final String VERSION = "5.0.0";
+    public static final String VERSION = "5.0.0";
     private static final String TAG = "VungleSdk";
     private static final String API_ENDPOINT = "https://api.vungle.com";
     private static Sdk INSTANCE;
