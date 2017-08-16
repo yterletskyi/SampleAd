@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.PlayPercentage;
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.PlayPercentage;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.MimeDetector;
 import yterletskyi.com.vunglesdk.sdk.vast.Attribute;
 import yterletskyi.com.vunglesdk.sdk.vast.IChild;

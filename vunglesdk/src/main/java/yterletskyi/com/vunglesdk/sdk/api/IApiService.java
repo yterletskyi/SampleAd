@@ -7,12 +7,12 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
-import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
-import yterletskyi.com.vunglesdk.sdk.model.reportad.response.ReportAdResponse;
-import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
+import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
-import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 
 /**
  * Created by yterletskyi on 25.07.17.

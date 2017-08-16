@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk.model.request;
+package yterletskyi.com.vunglesdk.sdk.model.request.global;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,6 +8,7 @@ public class GlobalRequest {
     public App app;
     @SerializedName("device")
     public Device device;
+
     @SerializedName("request")
     public IRequest request;
 

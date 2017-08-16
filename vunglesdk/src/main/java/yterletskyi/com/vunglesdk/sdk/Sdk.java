@@ -22,15 +22,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
-import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
-import yterletskyi.com.vunglesdk.sdk.model.reportad.response.ReportAdResponse;
-import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
+import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
-import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
@@ -245,9 +245,9 @@ public class Sdk {
 
     private Placement getPlacementForAd(String adId) {
         Placement placement = new Placement();
-        List<yterletskyi.com.vunglesdk.sdk.model.init.response.Placement> placements = mInitResponse.placements;
+        List<yterletskyi.com.vunglesdk.sdk.model.response.init.Placement> placements = mInitResponse.placements;
         placement.withReferenceId(adId);
-        for (yterletskyi.com.vunglesdk.sdk.model.init.response.Placement itPlacement : placements) {
+        for (yterletskyi.com.vunglesdk.sdk.model.response.init.Placement itPlacement : placements) {
             if (itPlacement.referenceId.equals(adId)) {
                 placement.withAutoCached(itPlacement.isAutoCached);
                 break;

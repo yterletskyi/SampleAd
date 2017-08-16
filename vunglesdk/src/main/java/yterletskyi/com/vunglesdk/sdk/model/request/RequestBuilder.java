@@ -13,7 +13,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.Android;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.App;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.Device;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.Ext;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.Request;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.Vungle;
+import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;

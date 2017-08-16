@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk.model.reportad.response;
+package yterletskyi.com.vunglesdk.sdk.model.response.reportad;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk.model.request;
+package yterletskyi.com.vunglesdk.sdk.model.request.global;
 
 import com.google.gson.annotations.SerializedName;
 

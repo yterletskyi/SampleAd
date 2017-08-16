@@ -2,7 +2,7 @@ package yterletskyi.com.vunglesdk.sdk.model.request.willplayad;
 
 import com.google.gson.annotations.SerializedName;
 
-import yterletskyi.com.vunglesdk.sdk.model.request.IRequest;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.IRequest;
 
 /**
  * Created by yterletskyi on 16.08.17.

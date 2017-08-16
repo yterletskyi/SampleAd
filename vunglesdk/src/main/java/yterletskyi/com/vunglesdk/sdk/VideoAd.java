@@ -2,7 +2,7 @@ package yterletskyi.com.vunglesdk.sdk;
 
 import java.io.File;
 
-import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 
 /**
  * Created by yterletskyi on 15.08.17.
