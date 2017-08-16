@@ -23,9 +23,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
+import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
@@ -38,13 +41,11 @@ public class Sdk {
 
     public static final String VERSION = "5.0.0";
     private static final String TAG = "VungleSdk";
-    private static final String API_ENDPOINT = "https://api.vungle.com";
     private static Sdk INSTANCE;
     private String mAppId;
-    private VASTPlayer mVASTPlayer;
+    private Context mApplicationContext;
     private IApiService mApiService;
     private InitResponse mInitResponse;
-    private Context mApplicationContext;
     private Map<String, VideoAd> mAdMap;
 
     private Sdk(Context applicationContext) {
@@ -66,7 +67,7 @@ public class Sdk {
 
     private void createApiInterface() {
         Retrofit mRetrofit = new Retrofit.Builder()
-                .baseUrl(API_ENDPOINT)
+                .baseUrl("https://www.google.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mApiService = mRetrofit.create(IApiService.class);
@@ -100,11 +101,7 @@ public class Sdk {
 
     private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
         RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest globalRequest = new GlobalRequest();
-        if (mInitResponse != null) {
-            globalRequest = requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
-        }
-        return globalRequest;
+        return requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
     }
 
     public void preloadAd(String placementId, OnAdListener onAdListener) {
@@ -191,36 +188,70 @@ public class Sdk {
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        mVASTPlayer = new VASTPlayer(activity, new VASTPlayer.VASTPlayerListener() {
+        final VASTPlayer vastPlayer = new VASTPlayer(activity);
+        vastPlayer.setVASTPlayerListener(
+                new VASTPlayer.VASTPlayerListener() {
+                    @Override
+                    public void vastReady() {
+                        vastPlayer.play();
+                        sendWillPlayAdRequest(videoAd);
+                        onAdListener.onAdStarted();
+                    }
+
+                    @Override
+                    public void vastError(int error) {
+                        onAdListener.onAdFailedToLoad();
+                    }
+
+                    @Override
+                    public void vastClick() {
+                        Log.i(TAG, "vastClick: ");
+                    }
+
+                    @Override
+                    public void vastComplete() {
+                        onAdListener.onAdCompleted();
+                        showPostRoll(activity, videoAd);
+                    }
+
+                    @Override
+                    public void vastDismiss() {
+
+                    }
+                });
+        String vastXmlString = videoAd.getVastXml();
+        vastPlayer.loadVideoWithData(vastXmlString);
+    }
+
+    private void sendWillPlayAdRequest(VideoAd videoAd) {
+        String url = mInitResponse.endpoints.willPlayAd;
+        Ad ad = videoAd.getPreloadResponse().ads.get(0);
+        Placement placement = getPlacementForAd(videoAd.getPlacementId());
+        GlobalRequest request = new RequestBuilder().buildPlayingAdRequest(mApplicationContext, mAppId, ad.adMarkup.adToken, placement);
+        Call<WillPlayAdResponse> call = mApiService.playingAd(url, request);
+        call.enqueue(new Callback<WillPlayAdResponse>() {
             @Override
-            public void vastReady() {
-                mVASTPlayer.play();
-                onAdListener.onAdStarted();
+            public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
             }
 
             @Override
-            public void vastError(int error) {
-                onAdListener.onAdFailedToLoad();
-            }
-
-            @Override
-            public void vastClick() {
-                Log.i(TAG, "vastClick: ");
-            }
-
-            @Override
-            public void vastComplete() {
-                onAdListener.onAdCompleted();
-                showPostRoll(activity, videoAd);
-            }
-
-            @Override
-            public void vastDismiss() {
-
+            public void onFailure(Call<WillPlayAdResponse> call, Throwable t) {
+                call.enqueue(this);
             }
         });
-        String vastXmlString = videoAd.getVastXml();
-        mVASTPlayer.loadVideoWithData(vastXmlString);
+    }
+
+    private Placement getPlacementForAd(String adId) {
+        Placement placement = new Placement();
+        List<yterletskyi.com.vunglesdk.sdk.model.init.response.Placement> placements = mInitResponse.placements;
+        placement.withReferenceId(adId);
+        for (yterletskyi.com.vunglesdk.sdk.model.init.response.Placement itPlacement : placements) {
+            if (itPlacement.referenceId.equals(adId)) {
+                placement.withAutoCached(itPlacement.isAutoCached);
+                break;
+            }
+        }
+        return placement;
     }
 
     private File findIndexHtmlFile(File postBundleFile) {
