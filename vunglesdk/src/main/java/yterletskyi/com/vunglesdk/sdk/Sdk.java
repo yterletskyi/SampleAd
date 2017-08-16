@@ -41,12 +41,11 @@ public class Sdk {
 
     public static final String VERSION = "5.0.0";
     private static final String TAG = "VungleSdk";
-    private static final String API_ENDPOINT = "https://api.vungle.com";
     private static Sdk INSTANCE;
     private String mAppId;
+    private Context mApplicationContext;
     private IApiService mApiService;
     private InitResponse mInitResponse;
-    private Context mApplicationContext;
     private Map<String, VideoAd> mAdMap;
 
     private Sdk(Context applicationContext) {
@@ -68,7 +67,7 @@ public class Sdk {
 
     private void createApiInterface() {
         Retrofit mRetrofit = new Retrofit.Builder()
-                .baseUrl(API_ENDPOINT)
+                .baseUrl("https://www.google.com")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mApiService = mRetrofit.create(IApiService.class);
