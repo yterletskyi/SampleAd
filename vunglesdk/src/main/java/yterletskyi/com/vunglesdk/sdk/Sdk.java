@@ -25,9 +25,11 @@ import yterletskyi.com.vunglesdk.sdk.api.IApiService;
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.reportad.response.ReportAdResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
 import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
@@ -287,6 +289,7 @@ public class Sdk {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 webViewDialog.dismiss();
                 videoAd.getOnAdListener().onAdClosed();
+                sendReportAdRequest(videoAd);
             }
 
             @Override
@@ -303,6 +306,26 @@ public class Sdk {
         });
         webViewDialog.show();
         firePostrollViewEvents(videoAd);
+    }
+
+    private void sendReportAdRequest(VideoAd videoAd) {
+        String placementId = videoAd.getPlacementId();
+        Placement placement = getPlacementForAd(placementId);
+        String token = videoAd.getPreloadResponse().ads.get(0).adMarkup.adToken;
+        Request request = new Request(placement, token);
+        String url = mInitResponse.endpoints.reportAd;
+        Call<ReportAdResponse> call = mApiService.reportAd(url, request);
+        call.enqueue(new Callback<ReportAdResponse>() {
+            @Override
+            public void onResponse(Call<ReportAdResponse> call, Response<ReportAdResponse> response) {
+                System.out.println();
+            }
+
+            @Override
+            public void onFailure(Call<ReportAdResponse> call, Throwable t) {
+                System.out.println();
+            }
+        });
     }
 
     private void firePostrollViewEvents(VideoAd videoAd) {

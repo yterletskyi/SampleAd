@@ -16,6 +16,14 @@ public class Request implements IRequest {
     @SerializedName("ad_token")
     public String adToken;
 
+    public Request() {
+    }
+
+    public Request(Placement placement, String adToken) {
+        this.placement = placement;
+        this.adToken = adToken;
+    }
+
     public Request withPlacement(Placement placement) {
         this.placement = placement;
         return this;
@@ -25,5 +33,4 @@ public class Request implements IRequest {
         this.adToken = adToken;
         return this;
     }
-
 }

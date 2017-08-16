@@ -9,7 +9,9 @@ import retrofit2.http.POST;
 import retrofit2.http.Url;
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
+import yterletskyi.com.vunglesdk.sdk.model.reportad.response.ReportAdResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
 import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
 
 /**
@@ -26,6 +28,7 @@ public interface IApiService {
     @Headers("Content-Type: application/json")
     Call<PreloadResponse> preloadAd(@Url String url, @Body GlobalRequest request);
 
+    // TODO: 16.08.17 rename this
     @GET
     Call<Void> fireEvent(@Url String url);
 
@@ -35,6 +38,6 @@ public interface IApiService {
 
     @POST // report_ad endpoint
     @Headers("Content-Type: application/json")
-    Call<Void> reportAd(@Url String url, @Body GlobalRequest request);
+    Call<ReportAdResponse> reportAd(@Url String url, @Body Request request);
 
 }
