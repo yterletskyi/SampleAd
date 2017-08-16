@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.DiskSpaceManager;
@@ -35,66 +36,97 @@ public class RequestBuilder {
         return buildRequest(context, appId, Collections.singletonList(placementId), initResponse.vduid);
     }
 
+    public GlobalRequest buildPlayingAdRequest(Context context, String appId, String adToken, Placement placement) {
+        GlobalRequest globalRequest = new GlobalRequest();
+        try {
+            globalRequest
+                    .withApp(
+                            buildApp(context, appId)
+                    )
+                    .withDevice(
+                            buildDevice(context, appId)
+                    )
+                    .withRequest(new yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request()
+                            .withAdToken(adToken)
+                            .withPlacement(placement));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return globalRequest;
+    }
+
     private GlobalRequest buildRequest(Context context, String appId, List<String> placementIds, String vduid) {
         GlobalRequest globalRequest = new GlobalRequest();
         try {
             globalRequest
                     .withApp(
-                            new App()
-                                    .withId(appId)
-                                    // TODO: 26.07.17 change it back
-//                                .withBundle(context.getPackageName())
-                                    .withBundle("com.publisher.sample")
-                                    .withVer(getVersionName(context))
+                            buildApp(context, appId)
                     )
                     .withRequest(
-                            new Request()
-                                    .withPlacements(placementIds)
+                            buildRequestWithMultiplePlacements(placementIds)
                     )
                     .withDevice(
-                            new Device()
-                                    .withUa(new WebView(context).getSettings().getUserAgentString())
-                                    .withLmt(1)
-                                    .withMake(Build.MANUFACTURER)
-                                    .withModel(Build.MODEL)
-                                    .withOs(PLATFORM)
-                                    .withOsv(Build.VERSION.RELEASE)
-                                    .withW(context.getResources().getDisplayMetrics().widthPixels)
-                                    .withH(context.getResources().getDisplayMetrics().heightPixels)
-                                    .withCarrier(((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkOperatorName())
-                                    .withIfa(getAndroidId(context))
-                                    .withExt(
-                                            new Ext()
-                                                    .withVungle(
-                                                            new Vungle()
-                                                                    .withAndroid(
-                                                                            new Android()
-                                                                                    .withVolumeLevel(new MyAudioManager().getVolumeLevel(context))
-                                                                                    .withBatteryLevel(new BatteryManager().getBatteryPercentage(context))
-                                                                                    .withBatterySaverEnabled(new BatteryManager().getBatterySaverEnabled(context))
-                                                                                    .withBatteryState(new BatteryManager().isCharging(context) ? "CHARGING" : "NOT_CHARGING")
-                                                                                    .withStorageBytesAvailable(new DiskSpaceManager().getAvailableExternalMemorySize())
-                                                                                    .withDataSaverStatus(Connectivity.getDataSavedStatus(context))
-                                                                                    .withNetworkMetered(Connectivity.isNetworkMetered(context) ? 1 : 0)
-                                                                                    .withSdCardAvailable(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) ? 1 : 0)
-                                                                                    .withConnectionType(Connectivity.getConnectionType(context))
-                                                                                    .withConnectionTypeDetail(Connectivity.getConnectionTypeDetail(context))
-                                                                                    .withSoundEnabled(new MyAudioManager().isSoundEnabled(context) ? 1 : 0)
-                                                                                    .withLanguage(Locale.getDefault().getLanguage())
-                                                                                    .withLocale(Locale.getDefault().toString())
-                                                                                    .withAndroidId(getAndroidId(context))
-                                                                                    .withVduid(vduid)
-                                                                                    .withOsName(Build.FINGERPRINT)
-                                                                                    .withTimeZone(TimeZone.getDefault().getID())
-                                                                    )
-                                                                    .withPlatform(PLATFORM)
-                                                    )
-                                    )
+                            buildDevice(context, vduid)
                     );
         } catch (Exception e) {
             e.printStackTrace();
         }
         return globalRequest;
+    }
+
+    private App buildApp(Context context, String appId) throws Exception {
+        return new App()
+                .withId(appId)
+                // TODO: 26.07.17 change it back
+//                                .withBundle(context.getPackageName())
+                .withBundle("com.publisher.sample")
+                .withVer(getVersionName(context));
+    }
+
+    private Device buildDevice(Context context, String vduid) throws Exception {
+        return new Device()
+                .withUa(new WebView(context).getSettings().getUserAgentString())
+                .withLmt(1)
+                .withMake(Build.MANUFACTURER)
+                .withModel(Build.MODEL)
+                .withOs(PLATFORM)
+                .withOsv(Build.VERSION.RELEASE)
+                .withW(context.getResources().getDisplayMetrics().widthPixels)
+                .withH(context.getResources().getDisplayMetrics().heightPixels)
+                .withCarrier(((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkOperatorName())
+                .withIfa(getAndroidId(context))
+                .withExt(
+                        new Ext()
+                                .withVungle(
+                                        new Vungle()
+                                                .withAndroid(
+                                                        new Android()
+                                                                .withVolumeLevel(new MyAudioManager().getVolumeLevel(context))
+                                                                .withBatteryLevel(new BatteryManager().getBatteryPercentage(context))
+                                                                .withBatterySaverEnabled(new BatteryManager().getBatterySaverEnabled(context))
+                                                                .withBatteryState(new BatteryManager().isCharging(context) ? "CHARGING" : "NOT_CHARGING")
+                                                                .withStorageBytesAvailable(new DiskSpaceManager().getAvailableExternalMemorySize())
+                                                                .withDataSaverStatus(Connectivity.getDataSavedStatus(context))
+                                                                .withNetworkMetered(Connectivity.isNetworkMetered(context) ? 1 : 0)
+                                                                .withSdCardAvailable(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) ? 1 : 0)
+                                                                .withConnectionType(Connectivity.getConnectionType(context))
+                                                                .withConnectionTypeDetail(Connectivity.getConnectionTypeDetail(context))
+                                                                .withSoundEnabled(new MyAudioManager().isSoundEnabled(context) ? 1 : 0)
+                                                                .withLanguage(Locale.getDefault().getLanguage())
+                                                                .withLocale(Locale.getDefault().toString())
+                                                                .withAndroidId(getAndroidId(context))
+                                                                .withVduid(vduid)
+                                                                .withOsName(Build.FINGERPRINT)
+                                                                .withTimeZone(TimeZone.getDefault().getID())
+                                                )
+                                                .withPlatform(PLATFORM)
+                                )
+                );
+    }
+
+    private Request buildRequestWithMultiplePlacements(List<String> placementIds) throws Exception {
+        return new Request()
+                .withPlacements(placementIds);
     }
 
     private String getAndroidId(Context context) {

@@ -23,9 +23,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
 import yterletskyi.com.vunglesdk.sdk.model.init.response.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.preload.response.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.preload.response.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
+import yterletskyi.com.vunglesdk.sdk.model.willplayad.response.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
@@ -195,6 +198,7 @@ public class Sdk {
             @Override
             public void vastReady() {
                 mVASTPlayer.play();
+                sendWillPlayAdRequest(videoAd);
                 onAdListener.onAdStarted();
             }
 
@@ -221,6 +225,37 @@ public class Sdk {
         });
         String vastXmlString = videoAd.getVastXml();
         mVASTPlayer.loadVideoWithData(vastXmlString);
+    }
+
+    private void sendWillPlayAdRequest(VideoAd videoAd) {
+        String url = mInitResponse.endpoints.willPlayAd;
+        Ad ad = videoAd.getPreloadResponse().ads.get(0);
+        Placement placement = getPlacementForAd(videoAd.getPlacementId());
+        GlobalRequest request = new RequestBuilder().buildPlayingAdRequest(mApplicationContext, mAppId, ad.adMarkup.adToken, placement);
+        Call<WillPlayAdResponse> call = mApiService.playingAd(url, request);
+        call.enqueue(new Callback<WillPlayAdResponse>() {
+            @Override
+            public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
+            }
+
+            @Override
+            public void onFailure(Call<WillPlayAdResponse> call, Throwable t) {
+                call.enqueue(this);
+            }
+        });
+    }
+
+    private Placement getPlacementForAd(String adId) {
+        Placement placement = new Placement();
+        List<yterletskyi.com.vunglesdk.sdk.model.init.response.Placement> placements = mInitResponse.placements;
+        placement.withReferenceId(adId);
+        for (yterletskyi.com.vunglesdk.sdk.model.init.response.Placement itPlacement : placements) {
+            if (itPlacement.referenceId.equals(adId)) {
+                placement.withAutoCached(itPlacement.isAutoCached);
+                break;
+            }
+        }
+        return placement;
     }
 
     private File findIndexHtmlFile(File postBundleFile) {

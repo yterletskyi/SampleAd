@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Request {
+public class Request implements IRequest {
 
     @SerializedName("placements")
     public List<String> placements = null;

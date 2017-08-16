@@ -1,6 +1,5 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class GlobalRequest {
@@ -10,7 +9,7 @@ public class GlobalRequest {
     @SerializedName("device")
     public Device device;
     @SerializedName("request")
-    public Request request;
+    public IRequest request;
 
     public GlobalRequest withApp(App app) {
         this.app = app;
@@ -22,7 +21,7 @@ public class GlobalRequest {
         return this;
     }
 
-    public GlobalRequest withRequest(Request request) {
+    public GlobalRequest withRequest(IRequest request) {
         this.request = request;
         return this;
     }
