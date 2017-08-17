@@ -29,7 +29,7 @@ import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
@@ -312,9 +312,9 @@ public class Sdk {
         String placementId = videoAd.getPlacementId();
         Placement placement = getPlacementForAd(placementId);
         String token = videoAd.getPreloadResponse().ads.get(0).adMarkup.adToken;
-        Request request = new Request(placement, token);
+        WillPlayAdRequest willPlayAdRequest = new WillPlayAdRequest(placement, token);
         String url = mInitResponse.endpoints.reportAd;
-        Call<ReportAdResponse> call = mApiService.reportAd(url, request);
+        Call<ReportAdResponse> call = mApiService.reportAd(url, willPlayAdRequest);
         call.enqueue(new Callback<ReportAdResponse>() {
             @Override
             public void onResponse(Call<ReportAdResponse> call, Response<ReportAdResponse> response) {

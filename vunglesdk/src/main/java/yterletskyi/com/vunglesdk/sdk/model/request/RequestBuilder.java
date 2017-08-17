@@ -18,8 +18,9 @@ import yterletskyi.com.vunglesdk.sdk.model.request.global.App;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Device;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Ext;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
-import yterletskyi.com.vunglesdk.sdk.model.request.global.Request;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.PreloadAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Vungle;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
@@ -53,7 +54,7 @@ public class RequestBuilder {
                     .withDevice(
                             buildDevice(context, appId)
                     )
-                    .withRequest(new yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request()
+                    .withRequest(new WillPlayAdRequest()
                             .withAdToken(adToken)
                             .withPlacement(placement));
         } catch (Exception e) {
@@ -131,8 +132,8 @@ public class RequestBuilder {
                 );
     }
 
-    private Request buildRequestWithMultiplePlacements(List<String> placementIds) throws Exception {
-        return new Request()
+    private PreloadAdRequest buildRequestWithMultiplePlacements(List<String> placementIds) throws Exception {
+        return new PreloadAdRequest()
                 .withPlacements(placementIds);
     }
 

@@ -6,6 +6,7 @@ public class GlobalRequest {
 
     @SerializedName("app")
     public App app;
+
     @SerializedName("device")
     public Device device;
 

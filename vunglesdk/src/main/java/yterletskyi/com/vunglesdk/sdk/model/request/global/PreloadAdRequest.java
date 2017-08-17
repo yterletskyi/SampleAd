@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Request implements IRequest {
+public class PreloadAdRequest implements IRequest {
 
     @SerializedName("placements")
-    public List<String> placements = null;
+    public List<String> placements;
 
-    public Request withPlacements(List<String> placements) {
+    public PreloadAdRequest withPlacements(List<String> placements) {
         this.placements = placements;
         return this;
     }

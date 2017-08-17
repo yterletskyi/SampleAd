@@ -8,7 +8,7 @@ import yterletskyi.com.vunglesdk.sdk.model.request.global.IRequest;
  * Created by yterletskyi on 16.08.17.
  */
 
-public class Request implements IRequest {
+public class WillPlayAdRequest implements IRequest {
 
     @SerializedName("placement")
     public Placement placement;
@@ -16,20 +16,20 @@ public class Request implements IRequest {
     @SerializedName("ad_token")
     public String adToken;
 
-    public Request() {
+    public WillPlayAdRequest() {
     }
 
-    public Request(Placement placement, String adToken) {
+    public WillPlayAdRequest(Placement placement, String adToken) {
         this.placement = placement;
         this.adToken = adToken;
     }
 
-    public Request withPlacement(Placement placement) {
+    public WillPlayAdRequest withPlacement(Placement placement) {
         this.placement = placement;
         return this;
     }
 
-    public Request withAdToken(String adToken) {
+    public WillPlayAdRequest withAdToken(String adToken) {
         this.adToken = adToken;
         return this;
     }

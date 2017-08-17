@@ -11,7 +11,7 @@ import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Request;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 
 /**
@@ -37,6 +37,6 @@ public interface IApiService {
 
     @POST // report_ad endpoint
     @Headers("Content-Type: application/json")
-    Call<ReportAdResponse> reportAd(@Url String url, @Body Request request);
+    Call<ReportAdResponse> reportAd(@Url String url, @Body WillPlayAdRequest willPlayAdRequest);
 
 }

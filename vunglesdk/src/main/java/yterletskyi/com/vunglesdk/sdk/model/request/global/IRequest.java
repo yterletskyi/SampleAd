@@ -1,8 +1,7 @@
 package yterletskyi.com.vunglesdk.sdk.model.request.global;
 
 /**
- * Created by yterletskyi on 16.08.17.
+ * Created by yterletskyi on 17.08.17.
  */
 
-public interface IRequest {
-}
+public interface IRequest {}
