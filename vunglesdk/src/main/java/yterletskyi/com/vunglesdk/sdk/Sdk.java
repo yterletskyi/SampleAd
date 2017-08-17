@@ -34,6 +34,7 @@ import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdRespons
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
+import yterletskyi.com.vunglesdk.sdk.vast.VastCreator;
 
 /**
  * Created by yterletskyi on 26.07.17.
@@ -124,7 +125,7 @@ public class Sdk {
                     PreloadResponse body = response.body();
                     videoAd.setPreloadResponse(body);
                     downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
-                    String vast = formVastXml(body);
+                    String vast = composeVastXml(body);
                     videoAd.setVastXml(vast);
                     videoAd.getOnAdListener().onAdLoaded();
                 } catch (Exception e) {
@@ -139,9 +140,9 @@ public class Sdk {
         });
     }
 
-    private String formVastXml(PreloadResponse result) {
+    private String composeVastXml(PreloadResponse result) {
         VastCreator vastCreator = new VastCreator();
-        return vastCreator.build(result);
+        return vastCreator.composeVastForAd(result.ads.get(0));
     }
 
     private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) throws Exception {
@@ -301,11 +302,11 @@ public class Sdk {
             @Override
             public void onDownloadClicked() {
                 openBrowseIntent(videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl);
-                firePostrollClickEvents(videoAd);
+                sendPostrollClickEvents(videoAd);
             }
         });
         webViewDialog.show();
-        firePostrollViewEvents(videoAd);
+        sendPostrollViewEvents(videoAd);
     }
 
     private void sendReportAdRequest(VideoAd videoAd) {
@@ -328,14 +329,14 @@ public class Sdk {
         });
     }
 
-    private void firePostrollViewEvents(VideoAd videoAd) {
+    private void sendPostrollViewEvents(VideoAd videoAd) {
         List<String> postrollViewUrls = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollView;
         for (String url : postrollViewUrls) {
             fireUrl(url);
         }
     }
 
-    private void firePostrollClickEvents(VideoAd videoAd) {
+    private void sendPostrollClickEvents(VideoAd videoAd) {
         List<String> postrollClickEvents = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollClick;
         for (String url : postrollClickEvents) {
             fireUrl(url);

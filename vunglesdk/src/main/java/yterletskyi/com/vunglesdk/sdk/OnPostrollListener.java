@@ -5,9 +5,11 @@ package yterletskyi.com.vunglesdk.sdk;
  */
 
 public interface OnPostrollListener {
+
     void onCloseClicked();
 
     void onReplayClicked();
 
     void onDownloadClicked();
+
 }
