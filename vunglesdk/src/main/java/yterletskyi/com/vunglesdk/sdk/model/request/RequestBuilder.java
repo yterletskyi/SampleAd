@@ -20,9 +20,9 @@ import yterletskyi.com.vunglesdk.sdk.model.request.global.Ext;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.PreloadAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Vungle;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.DiskSpaceManager;
@@ -46,20 +46,16 @@ public class RequestBuilder {
 
     public GlobalRequest buildPlayingAdRequest(Context context, String appId, String adToken, Placement placement) {
         GlobalRequest globalRequest = new GlobalRequest();
-        try {
-            globalRequest
-                    .withApp(
-                            buildApp(context, appId)
-                    )
-                    .withDevice(
-                            buildDevice(context, appId)
-                    )
-                    .withRequest(new WillPlayAdRequest()
-                            .withAdToken(adToken)
-                            .withPlacement(placement));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        globalRequest
+                .withApp(
+                        buildApp(context, appId)
+                )
+                .withDevice(
+                        buildDevice(context, appId)
+                )
+                .withRequest(new WillPlayAdRequest()
+                        .withAdToken(adToken)
+                        .withPlacement(placement));
         return globalRequest;
     }
 
@@ -82,7 +78,7 @@ public class RequestBuilder {
         return globalRequest;
     }
 
-    private App buildApp(Context context, String appId) throws Exception {
+    private App buildApp(Context context, String appId) {
         return new App()
                 .withId(appId)
                 // TODO: 26.07.17 change it back
@@ -91,7 +87,7 @@ public class RequestBuilder {
                 .withVer(getVersionName(context));
     }
 
-    private Device buildDevice(Context context, String vduid) throws Exception {
+    private Device buildDevice(Context context, String vduid) {
         return new Device()
                 .withUa(new WebView(context).getSettings().getUserAgentString())
                 .withLmt(1)
@@ -116,7 +112,7 @@ public class RequestBuilder {
                                                                 .withStorageBytesAvailable(new DiskSpaceManager().getAvailableExternalMemorySize())
                                                                 .withDataSaverStatus(Connectivity.getDataSavedStatus(context))
                                                                 .withNetworkMetered(Connectivity.isNetworkMetered(context) ? 1 : 0)
-                                                                .withSdCardAvailable(android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) ? 1 : 0)
+                                                                .withSdCardAvailable(new DiskSpaceManager().externalMemoryAvailable() ? 1 : 0)
                                                                 .withConnectionType(Connectivity.getConnectionType(context))
                                                                 .withConnectionTypeDetail(Connectivity.getConnectionTypeDetail(context))
                                                                 .withSoundEnabled(new MyAudioManager().isSoundEnabled(context) ? 1 : 0)
@@ -132,9 +128,8 @@ public class RequestBuilder {
                 );
     }
 
-    private PreloadAdRequest buildRequestWithMultiplePlacements(List<String> placementIds) throws Exception {
-        return new PreloadAdRequest()
-                .withPlacements(placementIds);
+    private PreloadAdRequest buildRequestWithMultiplePlacements(List<String> placementIds) {
+        return new PreloadAdRequest().withPlacements(placementIds);
     }
 
     private String getAndroidId(Context context) {

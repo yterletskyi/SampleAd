@@ -22,18 +22,20 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
+import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
+import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
+import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
-import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
-import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
+import yterletskyi.com.vunglesdk.sdk.vast.Tag;
+import yterletskyi.com.vunglesdk.sdk.vast.VastBuilder;
 import yterletskyi.com.vunglesdk.sdk.vast.VastCreator;
 
 /**
@@ -142,7 +144,8 @@ public class Sdk {
 
     private String composeVastXml(PreloadResponse result) {
         VastCreator vastCreator = new VastCreator();
-        return vastCreator.composeVastForAd(result.ads.get(0));
+        Tag tag = vastCreator.composeVastTagForAd(result.ads.get(0));
+        return new VastBuilder().buildFromTag(tag);
     }
 
     private void downloadPostBundle(final VideoAd videoAd, String postBundleUrl) throws Exception {

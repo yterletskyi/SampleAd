@@ -17,7 +17,7 @@ public class VastCreator {
     // TODO: 05.08.17 no impression field specified
     // TODO: 05.08.17 no duration field specified
 
-    public String composeVastForAd(Ad ad) {
+    public Tag composeVastTagForAd(Ad ad) {
         Map<Double, List<String>> quartiles = composeQuartilesMap(ad);
 
         String mimeType = new MimeDetector().getMimeForFile(ad.adMarkup.url);
@@ -94,7 +94,7 @@ public class VastCreator {
                 .withAttributes(xmlnsAttribute, namespaceAtribute, versionAttribute)
                 .withChildren(adTag);
 
-        return new VastBuilder().buildFromTag(vast);
+        return vast;
     }
 
     private Map<Double, List<String>> composeQuartilesMap(Ad ad) {
