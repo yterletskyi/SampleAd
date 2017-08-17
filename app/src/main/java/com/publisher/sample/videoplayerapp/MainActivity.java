@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onAdCompleted() {
-                        Log.i(TAG, "vastComplete: ");
+                        Log.i(TAG, "onAdCompleted: ");
                     }
                 });
             }

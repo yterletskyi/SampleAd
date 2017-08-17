@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.nexage.sourcekit.vast.VASTPlayer;
 
@@ -51,7 +50,6 @@ public class Sdk {
 
     public static final String VERSION = "5.0.0";
     private static final String INIT_ENDPOINT = "https://ads.api.vungle.com/";
-    private static final String TAG = "VungleSdk";
     private static Sdk INSTANCE;
     private Context mApplicationContext;
     private IApiService mApiService;
@@ -234,7 +232,6 @@ public class Sdk {
 
                     @Override
                     public void vastClick() {
-                        Log.i(TAG, "vastClick: ");
                     }
 
                     @Override
@@ -298,6 +295,7 @@ public class Sdk {
                 videoAd.getOnAdListener().onAdClosed();
                 videoAd.setAdViewMiliis(mTimeMeasuerer.finishAdViewTimer());
                 sendReportAdRequest(videoAd);
+                mAdMap.remove(videoAd.getPlacementId());
             }
 
             @Override
