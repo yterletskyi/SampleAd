@@ -6,9 +6,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
+import yterletskyi.com.vunglesdk.sdk.model.response._new.NewLaunchResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
@@ -23,6 +24,13 @@ public interface IApiService {
     @POST("config")
     @Headers("Content-Type: application/json")
     Call<InitResponse> initSDK(@Header("Vungle-Version") String value, @Body GlobalRequest request);
+
+    @POST
+    @Headers("Content-Type: application/json")
+    Call<NewLaunchResponse> newLaunch(@Url String url,
+                                      @Query("app_id") String appId,
+                                      @Query("isu") String isu
+    );
 
     @POST // ads endpoint
     @Headers("Content-Type: application/json")

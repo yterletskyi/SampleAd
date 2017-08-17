@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk.model;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 import yterletskyi.com.vunglesdk.sdk.Timer;
 

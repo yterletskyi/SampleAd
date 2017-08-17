@@ -19,10 +19,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
-import yterletskyi.com.vunglesdk.sdk.model.TimeMeasuerer;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
+import yterletskyi.com.vunglesdk.sdk.model.response._new.NewLaunchResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
@@ -33,8 +33,12 @@ import yterletskyi.com.vunglesdk.sdk.utils.FileFinder;
 import yterletskyi.com.vunglesdk.sdk.utils.GetRequestSender;
 import yterletskyi.com.vunglesdk.sdk.utils.HyperlinkViewer;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
+import yterletskyi.com.vunglesdk.sdk.utils.NullRetrofitCallback;
 import yterletskyi.com.vunglesdk.sdk.utils.ScreenRotator;
+import yterletskyi.com.vunglesdk.sdk.utils.SharedPreferenceManager;
+import yterletskyi.com.vunglesdk.sdk.utils.TimeMeasuerer;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.AndroidId;
 import yterletskyi.com.vunglesdk.sdk.vast.Tag;
 import yterletskyi.com.vunglesdk.sdk.vast.VastBuilder;
 import yterletskyi.com.vunglesdk.sdk.vast.VastCreator;
@@ -83,17 +87,18 @@ public class Sdk {
         mApiService = mRetrofit.create(IApiService.class);
     }
 
-    public void initialize(String appId, List<String> placementList, final OnInitListener listener) {
+    public void initialize(final String appId, List<String> placementList, final OnInitListener listener) {
         GlobalRequest request = mRequestBuilder.buildInitSdkRequest(mApplicationContext, appId, placementList);
 
         Call<InitResponse> call = mApiService.initSDK(Sdk.VERSION, request);
         call.enqueue(new Callback<InitResponse>() {
             @Override
-            public void onResponse(@NonNull Call<InitResponse> call, @NonNull retrofit2.Response<InitResponse> response) {
+            public void onResponse(@NonNull Call<InitResponse> call, @NonNull Response<InitResponse> response) {
                 InitResponse initResponse = response.body();
                 if (initResponse != null) {
                     mInitResponse = initResponse;
                     listener.onInitSucceeded();
+                    sendNewLaunchRequestIfNeeded(appId);
                 } else {
                     listener.onInitFailed();
                 }
@@ -104,6 +109,21 @@ public class Sdk {
                 listener.onInitFailed();
             }
         });
+    }
+
+    private void sendNewLaunchRequestIfNeeded(String appId) {
+        SharedPreferenceManager sharedPreferenceManager = new SharedPreferenceManager(mApplicationContext);
+        if (sharedPreferenceManager.isFirstLaunch()) {
+            sendNewLaunchRequest(appId);
+            sharedPreferenceManager.setFirstLaunch(false);
+        }
+    }
+
+    private void sendNewLaunchRequest(String appId) {
+        String url = mInitResponse.endpoints._new;
+        String androidId = new AndroidId().getAndroidId(mApplicationContext);
+        Call<NewLaunchResponse> call = mApiService.newLaunch(url, appId, androidId);
+        call.enqueue(new NullRetrofitCallback<NewLaunchResponse>());
     }
 
     private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
@@ -239,17 +259,7 @@ public class Sdk {
         Placement placement = getPlacementForAd(videoAd.getPlacementId());
         GlobalRequest request = mRequestBuilder.buildPlayingAdRequest(ad.adMarkup.adToken, placement);
         Call<WillPlayAdResponse> call = mApiService.willPlayAd(url, request);
-        call.enqueue(new Callback<WillPlayAdResponse>() {
-            @Override
-            public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onFailure(Call<WillPlayAdResponse> call, Throwable t) {
-                System.out.println();
-            }
-        });
+        call.enqueue(new NullRetrofitCallback<WillPlayAdResponse>());
     }
 
     private Placement getPlacementForAd(String adId) {
@@ -312,17 +322,7 @@ public class Sdk {
         boolean incentivized = isAdIncentivized(videoAd.getPlacementId());
         GlobalRequest globalRequest = mRequestBuilder.buildReportAdRequest(videoAd.getAdModel(), incentivized, videoAd.getAdViewMiliis(), videoAd.getVideoLengthMiliis());
         Call<ReportAdResponse> call = mApiService.reportAd(url, globalRequest);
-        call.enqueue(new Callback<ReportAdResponse>() {
-            @Override
-            public void onResponse(Call<ReportAdResponse> call, Response<ReportAdResponse> response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onFailure(Call<ReportAdResponse> call, Throwable t) {
-                System.out.println();
-            }
-        });
+        call.enqueue(new NullRetrofitCallback<ReportAdResponse>());
     }
 
     private boolean isAdIncentivized(String placementId) {
