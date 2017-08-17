@@ -1,10 +1,7 @@
 package yterletskyi.com.vunglesdk.sdk.model.request;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.webkit.WebView;
 
@@ -20,9 +17,14 @@ import yterletskyi.com.vunglesdk.sdk.model.request.global.Ext;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.PreloadAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Vungle;
+import yterletskyi.com.vunglesdk.sdk.model.request.reportad.Play;
+import yterletskyi.com.vunglesdk.sdk.model.request.reportad.ReportAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
+import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
+import yterletskyi.com.vunglesdk.sdk.utils.AppManager;
+import yterletskyi.com.vunglesdk.sdk.utils.hardware.AndroidId;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.BatteryManager;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.Connectivity;
 import yterletskyi.com.vunglesdk.sdk.utils.hardware.DiskSpaceManager;
@@ -35,42 +37,67 @@ import yterletskyi.com.vunglesdk.sdk.utils.hardware.MyAudioManager;
 public class RequestBuilder {
 
     private static final String PLATFORM = "android";
+    private App mApp;
+    private Device mDevice;
 
     public GlobalRequest buildInitSdkRequest(Context context, String appId, List<String> placementIds) {
-        return buildRequest(context, appId, placementIds, "");
+        mApp = buildApp(context, appId);
+        mDevice = buildDevice(context);
+        return buildRequest(placementIds);
     }
 
-    public GlobalRequest buildPreloadAdRequest(Context context, String appId, String placementId, InitResponse initResponse) {
-        return buildRequest(context, appId, Collections.singletonList(placementId), initResponse.vduid);
+    public GlobalRequest buildPreloadAdRequest(String placementId, InitResponse initResponse) {
+        mDevice.ext.vungle.android.vduid = initResponse.vduid;
+        return buildRequest(Collections.singletonList(placementId));
     }
 
-    public GlobalRequest buildPlayingAdRequest(Context context, String appId, String adToken, Placement placement) {
+    public GlobalRequest buildReportAdRequest(Ad adModel, boolean incentivized, long adDurationMillis, long videoLengthMillis) {
+        GlobalRequest globalRequest = new GlobalRequest();
+        long startTime = System.currentTimeMillis() - adDurationMillis;
+        globalRequest
+                .withApp(mApp)
+                .withDevice(mDevice)
+                .withRequest(
+                        new ReportAdRequest()
+                                .withTtDownload(0)
+                                .withAdStartTime(startTime)
+                                .withAppId(mApp.id)
+                                .withCampaign(adModel.adMarkup.campaign)
+                                .withAdDuration(adDurationMillis)
+                                .withIncentivized(incentivized ? 1 : 0)
+                                .withPlacementReferenceId(adModel.placementReferenceId)
+                                .withAdToken(adModel.adMarkup.adToken)
+                                .withUrl(adModel.adMarkup.url)
+                                .withPlays(new Play()
+                                        .withStartTime(startTime)
+                                        .withVideoLength(videoLengthMillis)
+                                        .withVideoViewed(videoLengthMillis)
+                                )
+                                .withAdType(adModel.adMarkup.adType)
+
+                );
+        return globalRequest;
+    }
+
+    public GlobalRequest buildPlayingAdRequest(String adToken, Placement placement) {
         GlobalRequest globalRequest = new GlobalRequest();
         globalRequest
-                .withApp(
-                        buildApp(context, appId)
-                )
-                .withDevice(
-                        buildDevice(context, appId)
-                )
+                .withApp(mApp)
+                .withDevice(mDevice)
                 .withRequest(new WillPlayAdRequest()
                         .withAdToken(adToken)
                         .withPlacement(placement));
         return globalRequest;
     }
 
-    private GlobalRequest buildRequest(Context context, String appId, List<String> placementIds, String vduid) {
+    private GlobalRequest buildRequest(List<String> placementIds) {
         GlobalRequest globalRequest = new GlobalRequest();
         try {
             globalRequest
-                    .withApp(
-                            buildApp(context, appId)
-                    )
+                    .withApp(mApp)
+                    .withDevice(mDevice)
                     .withRequest(
                             buildRequestWithMultiplePlacements(placementIds)
-                    )
-                    .withDevice(
-                            buildDevice(context, vduid)
                     );
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,10 +111,10 @@ public class RequestBuilder {
                 // TODO: 26.07.17 change it back
 //                                .withBundle(context.getPackageName())
                 .withBundle("com.publisher.sample")
-                .withVer(getVersionName(context));
+                .withVer(new AppManager().getVersionName(context));
     }
 
-    private Device buildDevice(Context context, String vduid) {
+    private Device buildDevice(Context context) {
         return new Device()
                 .withUa(new WebView(context).getSettings().getUserAgentString())
                 .withLmt(1)
@@ -98,7 +125,7 @@ public class RequestBuilder {
                 .withW(context.getResources().getDisplayMetrics().widthPixels)
                 .withH(context.getResources().getDisplayMetrics().heightPixels)
                 .withCarrier(((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkOperatorName())
-                .withIfa(getAndroidId(context))
+                .withIfa(new AndroidId().getAndroidId(context))
                 .withExt(
                         new Ext()
                                 .withVungle(
@@ -118,8 +145,8 @@ public class RequestBuilder {
                                                                 .withSoundEnabled(new MyAudioManager().isSoundEnabled(context) ? 1 : 0)
                                                                 .withLanguage(Locale.getDefault().getLanguage())
                                                                 .withLocale(Locale.getDefault().toString())
-                                                                .withAndroidId(getAndroidId(context))
-                                                                .withVduid(vduid)
+                                                                .withAndroidId(new AndroidId().getAndroidId(context))
+                                                                .withVduid("")
                                                                 .withOsName(Build.FINGERPRINT)
                                                                 .withTimeZone(TimeZone.getDefault().getID())
                                                 )
@@ -130,22 +157,6 @@ public class RequestBuilder {
 
     private PreloadAdRequest buildRequestWithMultiplePlacements(List<String> placementIds) {
         return new PreloadAdRequest().withPlacements(placementIds);
-    }
-
-    private String getAndroidId(Context context) {
-        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-    }
-
-    private String getVersionName(Context context) {
-        String version;
-        try {
-            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            version = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            version = "1.0";
-        }
-        return version;
     }
 
 }

@@ -20,6 +20,7 @@ import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdRespons
 
 public interface IApiService {
 
+    @POST("config")
     @Headers("Content-Type: application/json")
     Call<InitResponse> initSDK(@Header("Vungle-Version") String value, @Body GlobalRequest request);
 
@@ -33,7 +34,7 @@ public interface IApiService {
 
     @POST // report_ad endpoint
     @Headers("Content-Type: application/json")
-    Call<ReportAdResponse> reportAd(@Url String url, @Body WillPlayAdRequest willPlayAdRequest);
+    Call<ReportAdResponse> reportAd(@Url String url, @Body GlobalRequest request);
 
     @GET
     Call<Void> sendGetRequest(@Url String url);

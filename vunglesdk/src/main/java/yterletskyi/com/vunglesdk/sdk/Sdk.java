@@ -15,13 +15,14 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
+import yterletskyi.com.vunglesdk.sdk.model.TimeMeasuerer;
 import yterletskyi.com.vunglesdk.sdk.model.request.RequestBuilder;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.Placement;
-import yterletskyi.com.vunglesdk.sdk.model.request.willplayad.WillPlayAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.response.init.InitResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
 import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
@@ -32,7 +33,6 @@ import yterletskyi.com.vunglesdk.sdk.utils.FileFinder;
 import yterletskyi.com.vunglesdk.sdk.utils.GetRequestSender;
 import yterletskyi.com.vunglesdk.sdk.utils.HyperlinkViewer;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
-import yterletskyi.com.vunglesdk.sdk.utils.NullRetrofitCallback;
 import yterletskyi.com.vunglesdk.sdk.utils.ScreenRotator;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
 import yterletskyi.com.vunglesdk.sdk.vast.Tag;
@@ -46,17 +46,20 @@ import yterletskyi.com.vunglesdk.sdk.vast.VastCreator;
 public class Sdk {
 
     public static final String VERSION = "5.0.0";
-    private static final String INIT_ENDPOINT = "https://ads.api.vungle.com/config";
+    private static final String INIT_ENDPOINT = "https://ads.api.vungle.com/";
     private static final String TAG = "VungleSdk";
     private static Sdk INSTANCE;
-    private String mAppId;
     private Context mApplicationContext;
     private IApiService mApiService;
     private InitResponse mInitResponse;
     private Map<String, VideoAd> mAdMap;
+    private TimeMeasuerer mTimeMeasuerer;
+    private RequestBuilder mRequestBuilder;
 
     private Sdk(Context applicationContext) {
         mApplicationContext = applicationContext;
+        mRequestBuilder = new RequestBuilder();
+        mTimeMeasuerer = new TimeMeasuerer();
         mAdMap = new HashMap<>();
         createApiInterface();
     }
@@ -81,10 +84,7 @@ public class Sdk {
     }
 
     public void initialize(String appId, List<String> placementList, final OnInitListener listener) {
-        mAppId = appId;
-
-        RequestBuilder requestBuilder = new RequestBuilder();
-        GlobalRequest request = requestBuilder.buildInitSdkRequest(mApplicationContext, mAppId, placementList);
+        GlobalRequest request = mRequestBuilder.buildInitSdkRequest(mApplicationContext, appId, placementList);
 
         Call<InitResponse> call = mApiService.initSDK(Sdk.VERSION, request);
         call.enqueue(new Callback<InitResponse>() {
@@ -107,8 +107,7 @@ public class Sdk {
     }
 
     private GlobalRequest buildPreloadRequestForAd(VideoAd videoAd) {
-        RequestBuilder requestBuilder = new RequestBuilder();
-        return requestBuilder.buildPreloadAdRequest(mApplicationContext, mAppId, videoAd.getPlacementId(), mInitResponse);
+        return mRequestBuilder.buildPreloadAdRequest(videoAd.getPlacementId(), mInitResponse);
     }
 
     public void preloadAd(String placementId, OnAdListener onAdListener) {
@@ -127,7 +126,7 @@ public class Sdk {
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
                 try {
                     PreloadResponse body = response.body();
-                    videoAd.setPreloadResponse(body);
+                    videoAd.setAdModel(body.ads.get(0));
                     downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
                     String vast = composeVastXml(body);
                     videoAd.setVastXml(vast);
@@ -201,9 +200,11 @@ public class Sdk {
                 new VASTPlayer.VASTPlayerListener() {
                     @Override
                     public void vastReady() {
+                        onAdListener.onAdStarted();
                         vastPlayer.play();
                         sendWillPlayAdRequest(videoAd);
-                        onAdListener.onAdStarted();
+                        mTimeMeasuerer.startAdViewTimer();
+                        mTimeMeasuerer.startVideoLengthTimer();
                     }
 
                     @Override
@@ -220,6 +221,7 @@ public class Sdk {
                     public void vastComplete() {
                         onAdListener.onAdCompleted();
                         showPostRoll(activity, videoAd);
+                        videoAd.setVideoLengthMiliis(mTimeMeasuerer.finishVideoLengthTimer());
                     }
 
                     @Override
@@ -233,11 +235,21 @@ public class Sdk {
 
     private void sendWillPlayAdRequest(VideoAd videoAd) {
         String url = mInitResponse.endpoints.willPlayAd;
-        Ad ad = videoAd.getPreloadResponse().ads.get(0);
+        Ad ad = videoAd.getAdModel();
         Placement placement = getPlacementForAd(videoAd.getPlacementId());
-        GlobalRequest request = new RequestBuilder().buildPlayingAdRequest(mApplicationContext, mAppId, ad.adMarkup.adToken, placement);
+        GlobalRequest request = mRequestBuilder.buildPlayingAdRequest(ad.adMarkup.adToken, placement);
         Call<WillPlayAdResponse> call = mApiService.willPlayAd(url, request);
-        call.enqueue(new NullRetrofitCallback<WillPlayAdResponse>());
+        call.enqueue(new Callback<WillPlayAdResponse>() {
+            @Override
+            public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
+                System.out.println();
+            }
+
+            @Override
+            public void onFailure(Call<WillPlayAdResponse> call, Throwable t) {
+                System.out.println();
+            }
+        });
     }
 
     private Placement getPlacementForAd(String adId) {
@@ -274,6 +286,7 @@ public class Sdk {
                 new ScreenRotator(activity).rotateToPortrait();
                 webViewDialog.dismiss();
                 videoAd.getOnAdListener().onAdClosed();
+                videoAd.setAdViewMiliis(mTimeMeasuerer.finishAdViewTimer());
                 sendReportAdRequest(videoAd);
             }
 
@@ -285,7 +298,7 @@ public class Sdk {
 
             @Override
             public void onDownloadClicked() {
-                String callToActionUrl = videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl;
+                String callToActionUrl = videoAd.getAdModel().adMarkup.callToActionUrl;
                 new HyperlinkViewer().openViewIntent(mApplicationContext, callToActionUrl);
                 sendPostrollClickEvents(videoAd);
             }
@@ -295,24 +308,40 @@ public class Sdk {
     }
 
     private void sendReportAdRequest(VideoAd videoAd) {
-        String placementId = videoAd.getPlacementId();
-        Placement placement = getPlacementForAd(placementId);
-        String token = videoAd.getPreloadResponse().ads.get(0).adMarkup.adToken;
-        WillPlayAdRequest willPlayAdRequest = new WillPlayAdRequest(placement, token);
         String url = mInitResponse.endpoints.reportAd;
-        Call<ReportAdResponse> call = mApiService.reportAd(url, willPlayAdRequest);
-        call.enqueue(new NullRetrofitCallback<ReportAdResponse>());
+        boolean incentivized = isAdIncentivized(videoAd.getPlacementId());
+        GlobalRequest globalRequest = mRequestBuilder.buildReportAdRequest(videoAd.getAdModel(), incentivized, videoAd.getAdViewMiliis(), videoAd.getVideoLengthMiliis());
+        Call<ReportAdResponse> call = mApiService.reportAd(url, globalRequest);
+        call.enqueue(new Callback<ReportAdResponse>() {
+            @Override
+            public void onResponse(Call<ReportAdResponse> call, Response<ReportAdResponse> response) {
+                System.out.println();
+            }
+
+            @Override
+            public void onFailure(Call<ReportAdResponse> call, Throwable t) {
+                System.out.println();
+            }
+        });
+    }
+
+    private boolean isAdIncentivized(String placementId) {
+        for (yterletskyi.com.vunglesdk.sdk.model.response.init.Placement placement : mInitResponse.placements)
+            if (placement.referenceId.equals(placementId)) {
+                return placement.isIncentivized;
+            }
+        return false;
     }
 
     private void sendPostrollViewEvents(VideoAd videoAd) {
-        List<String> postrollViewUrls = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollView;
+        List<String> postrollViewUrls = videoAd.getAdModel().adMarkup.tpat.postrollView;
         for (String url : postrollViewUrls) {
             sendGetRequest(url);
         }
     }
 
     private void sendPostrollClickEvents(VideoAd videoAd) {
-        List<String> postrollClickEvents = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollClick;
+        List<String> postrollClickEvents = videoAd.getAdModel().adMarkup.tpat.postrollClick;
         for (String url : postrollClickEvents) {
             sendGetRequest(url);
         }
