@@ -10,7 +10,6 @@ import android.util.Log;
 import org.nexage.sourcekit.vast.VASTPlayer;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,19 +250,7 @@ public class Sdk {
     }
 
     private File findIndexHtmlFile(File postBundleFile) {
-        File[] indexHtmls = postBundleFile.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.equals("index.html");
-            }
-        });
-        File file;
-        if (indexHtmls.length > 0) {
-            file = indexHtmls[0];
-        } else {
-            file = null;
-        }
-        return file;
+        return new FileFinder().findFile(postBundleFile, "index.html");
     }
 
     private void showPostRoll(Activity activity, VideoAd videoAd) {
