@@ -1,4 +1,4 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
 /**
  * Created by yterletskyi on 17.08.17.

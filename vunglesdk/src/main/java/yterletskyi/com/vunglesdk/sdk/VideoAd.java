@@ -10,13 +10,13 @@ import yterletskyi.com.vunglesdk.sdk.model.response.preload.Ad;
 
 class VideoAd {
 
-    private final String mPlacementId;
+    private Ad mAdModel;
     private String mVastXml;
+    private long mAdViewMiliis;
+    private String mPlacementId;
+    private long mVideoLengthMiliis;
     private File mPostrollBundleFile;
     private OnAdListener mOnAdListener;
-    private Ad mAdModel;
-    private long mVideoLengthMiliis;
-    private long mAdViewMiliis;
 
     public VideoAd(String placementId) {
         mPlacementId = placementId;

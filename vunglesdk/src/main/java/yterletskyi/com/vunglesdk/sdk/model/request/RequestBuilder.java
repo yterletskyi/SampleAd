@@ -15,7 +15,7 @@ import yterletskyi.com.vunglesdk.sdk.model.request.global.App;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Device;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Ext;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.GlobalRequest;
-import yterletskyi.com.vunglesdk.sdk.model.request.global.PreloadAdRequest;
+import yterletskyi.com.vunglesdk.sdk.model.request.preloadad.PreloadAdRequest;
 import yterletskyi.com.vunglesdk.sdk.model.request.global.Vungle;
 import yterletskyi.com.vunglesdk.sdk.model.request.reportad.Play;
 import yterletskyi.com.vunglesdk.sdk.model.request.reportad.ReportAdRequest;

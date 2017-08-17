@@ -145,10 +145,10 @@ public class Sdk {
             @Override
             public void onResponse(@NonNull Call<PreloadResponse> call, @NonNull retrofit2.Response<PreloadResponse> response) {
                 try {
-                    PreloadResponse body = response.body();
-                    videoAd.setAdModel(body.ads.get(0));
-                    downloadPostBundle(videoAd, body.ads.get(0).adMarkup.postBundle);
-                    String vast = composeVastXml(body);
+                    Ad adModel = response.body().ads.get(0);
+                    videoAd.setAdModel(adModel);
+                    downloadPostBundle(videoAd, adModel.adMarkup.postBundle);
+                    String vast = composeVastXml(adModel);
                     videoAd.setVastXml(vast);
                     videoAd.getOnAdListener().onAdLoaded();
                 } catch (Exception e) {
@@ -163,9 +163,9 @@ public class Sdk {
         });
     }
 
-    private String composeVastXml(PreloadResponse result) {
+    private String composeVastXml(Ad adModel) {
         VastCreator vastCreator = new VastCreator();
-        Tag tag = vastCreator.composeVastTagForAd(result.ads.get(0));
+        Tag tag = vastCreator.composeVastTagForAd(adModel);
         return new VastBuilder().buildFromTag(tag);
     }
 
