@@ -2,7 +2,6 @@ package yterletskyi.com.vunglesdk.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -18,7 +17,6 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
@@ -45,6 +43,7 @@ import yterletskyi.com.vunglesdk.sdk.vast.VastCreator;
 public class Sdk {
 
     public static final String VERSION = "5.0.0";
+    private static final String INIT_ENDPOINT = "https://ads.api.vungle.com/config";
     private static final String TAG = "VungleSdk";
     private static Sdk INSTANCE;
     private String mAppId;
@@ -72,7 +71,7 @@ public class Sdk {
 
     private void createApiInterface() {
         Retrofit mRetrofit = new Retrofit.Builder()
-                .baseUrl("https://www.google.com")
+                .baseUrl(INIT_ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mApiService = mRetrofit.create(IApiService.class);
@@ -235,16 +234,7 @@ public class Sdk {
         Placement placement = getPlacementForAd(videoAd.getPlacementId());
         GlobalRequest request = new RequestBuilder().buildPlayingAdRequest(mApplicationContext, mAppId, ad.adMarkup.adToken, placement);
         Call<WillPlayAdResponse> call = mApiService.willPlayAd(url, request);
-        call.enqueue(new Callback<WillPlayAdResponse>() {
-            @Override
-            public void onResponse(Call<WillPlayAdResponse> call, Response<WillPlayAdResponse> response) {
-            }
-
-            @Override
-            public void onFailure(Call<WillPlayAdResponse> call, Throwable t) {
-                call.enqueue(this);
-            }
-        });
+        call.enqueue(new NullRetrofitCallback<WillPlayAdResponse>());
     }
 
     private Placement getPlacementForAd(String adId) {
@@ -304,7 +294,8 @@ public class Sdk {
 
             @Override
             public void onDownloadClicked() {
-                openBrowseIntent(videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl);
+                String callToActionUrl = videoAd.getPreloadResponse().ads.get(0).adMarkup.callToActionUrl;
+                new HyperlinkViewer().openViewIntent(mApplicationContext, callToActionUrl);
                 sendPostrollClickEvents(videoAd);
             }
         });
@@ -319,49 +310,27 @@ public class Sdk {
         WillPlayAdRequest willPlayAdRequest = new WillPlayAdRequest(placement, token);
         String url = mInitResponse.endpoints.reportAd;
         Call<ReportAdResponse> call = mApiService.reportAd(url, willPlayAdRequest);
-        call.enqueue(new Callback<ReportAdResponse>() {
-            @Override
-            public void onResponse(Call<ReportAdResponse> call, Response<ReportAdResponse> response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onFailure(Call<ReportAdResponse> call, Throwable t) {
-                System.out.println();
-            }
-        });
+        call.enqueue(new NullRetrofitCallback<ReportAdResponse>());
     }
 
     private void sendPostrollViewEvents(VideoAd videoAd) {
         List<String> postrollViewUrls = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollView;
         for (String url : postrollViewUrls) {
-            fireUrl(url);
+            sendGetRequest(url);
         }
     }
 
     private void sendPostrollClickEvents(VideoAd videoAd) {
         List<String> postrollClickEvents = videoAd.getPreloadResponse().ads.get(0).adMarkup.tpat.postrollClick;
         for (String url : postrollClickEvents) {
-            fireUrl(url);
+            sendGetRequest(url);
         }
     }
 
-    private void fireUrl(String url) {
-        Call<Void> call = mApiService.sendGetRequest(url);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-            }
-        });
+    private void sendGetRequest(String url) {
+        GetRequestSender getRequestSender = new GetRequestSender(mApiService);
+        getRequestSender.send(url);
     }
 
-    private void openBrowseIntent(String url) {
-        Intent browseIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        browseIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mApplicationContext.startActivity(browseIntent);
-    }
+
 }
