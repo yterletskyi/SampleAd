@@ -2,7 +2,6 @@ package yterletskyi.com.vunglesdk.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,7 +28,12 @@ import yterletskyi.com.vunglesdk.sdk.model.response.preload.PreloadResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.reportad.ReportAdResponse;
 import yterletskyi.com.vunglesdk.sdk.model.response.willplayad.WillPlayAdResponse;
 import yterletskyi.com.vunglesdk.sdk.utils.DownloadTask;
+import yterletskyi.com.vunglesdk.sdk.utils.FileFinder;
+import yterletskyi.com.vunglesdk.sdk.utils.GetRequestSender;
+import yterletskyi.com.vunglesdk.sdk.utils.HyperlinkViewer;
 import yterletskyi.com.vunglesdk.sdk.utils.IndexHtmlChanger;
+import yterletskyi.com.vunglesdk.sdk.utils.NullRetrofitCallback;
+import yterletskyi.com.vunglesdk.sdk.utils.ScreenRotator;
 import yterletskyi.com.vunglesdk.sdk.utils.UnzipManager;
 import yterletskyi.com.vunglesdk.sdk.vast.Tag;
 import yterletskyi.com.vunglesdk.sdk.vast.VastBuilder;
@@ -190,7 +194,7 @@ public class Sdk {
         }
         final OnAdListener onAdListener = videoAd.getOnAdListener();
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        new ScreenRotator(activity).rotateToLandscape();
 
         final VASTPlayer vastPlayer = new VASTPlayer(activity);
         vastPlayer.setVASTPlayerListener(
@@ -267,7 +271,7 @@ public class Sdk {
         webViewDialog.setOnPostrollListener(new OnPostrollListener() {
             @Override
             public void onCloseClicked() {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                new ScreenRotator(activity).rotateToPortrait();
                 webViewDialog.dismiss();
                 videoAd.getOnAdListener().onAdClosed();
                 sendReportAdRequest(videoAd);

@@ -1,5 +1,6 @@
-package yterletskyi.com.vunglesdk.sdk;
+package yterletskyi.com.vunglesdk.sdk.utils;
 
+import yterletskyi.com.vunglesdk.sdk.OnCompleteListener;
 import yterletskyi.com.vunglesdk.sdk.api.IApiService;
 
 /**
